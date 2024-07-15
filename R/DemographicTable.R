@@ -188,7 +188,10 @@ DemographicTable.data.frame <- function(
   ## Inspect `include` in detail
   ############################################
   
-  vlst <- class1List(data[include]) # without `groups`
+  # without `groups`
+  # .. copy tzh::class1List
+  cl1 <- vapply(data[include], FUN = function(x) class(x)[1L], FUN.VALUE = '', USE.NAMES = TRUE)
+  vlst <- split.default(names(cl1), f = factor(cl1))
   
   if (length(vlst$matrix)) {
     mtype <- vapply(data[vlst$matrix], FUN = typeof, FUN.VALUE = '')
