@@ -35,11 +35,11 @@
 #' summaryText(c(NA, NA, NA))
 #' 
 #' @name summaryText
-#' @importFrom e1071 skewness
 #' @export
 summaryText <- function(x, fmt, ...) UseMethod('summaryText')
 
 #' @rdname summaryText
+#' @importFrom e1071 skewness
 #' @export
 summaryText.default <- function(x, fmt = '%.2f', ...) {
   

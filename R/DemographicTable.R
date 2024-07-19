@@ -356,7 +356,8 @@ as_flextable.DemographicTable <- function(x, ...) {
 }
 
 
-# ?base::print
+# ?base::print'
+# @export print.DemographicTable
 #' @export
 print.DemographicTable <- function(x, ...) print(as_flextable.DemographicTable(x, ...))
 
