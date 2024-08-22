@@ -1,5 +1,5 @@
 
-devtools::load_all('~/Dropbox/Packages/packageAdvanced')
+library(adv.tzh) # devtools::install_github('tingtingzhan/adv.tzh')
 
 
 removeLocalPackage('DemographicTable')
