@@ -23,11 +23,11 @@ Sprintf.DemographicTable <- function(model, ...) {
   data.name <- attr(model, which = 'data.name', exact = TRUE)
     
   ret <- if (length(groups <- attr(model, which = 'groups', exact = TRUE))) {
-    sprintf(fmt = 'Descriptive statistics, e.g., means, medians, standard deviations, inter-quartile ranges (IQR) and percentages, of all subjects in dataset `%s`, as well as for each group of %s, are provided using [R].',
+    sprintf(fmt = 'Descriptive statistics, e.g., means, medians, standard deviations, inter-quartile ranges (IQR) and percentages, of all subjects in dataset `%s`, as well as for each group of %s, are provided.',
             data.name,
             paste0('`', groups, '`', collapse = ', '))
       
-  } else sprintf(fmt = 'Descriptive statistics, e.g., means, medians, standard deviations, inter-quartile ranges (IQR) and percentages, of all subjects in dataset `%s` are provided using [R].', data.name)
+  } else sprintf(fmt = 'Descriptive statistics, e.g., means, medians, standard deviations, inter-quartile ranges (IQR) and percentages, of all subjects in dataset `%s` are provided.', data.name)
   
   return(noquote(ret))
   

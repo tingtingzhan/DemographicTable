@@ -16,7 +16,6 @@
 #' @export
 rmd_.DemographicTable <- function(x, xnm, type, ...) {
   return(c(
-    #add_bib(Sprintf.DemographicTable(x)),
     Sprintf.DemographicTable(x),
     if (type == 'html') '<details><summary>**Expand for Demographic Table**</summary>',
     '```{r results = \'asis\'}', 
