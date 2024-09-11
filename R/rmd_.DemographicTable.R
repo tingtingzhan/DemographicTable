@@ -19,9 +19,9 @@ rmd_.DemographicTable <- function(x, xnm, type, ...) {
     Sprintf.DemographicTable(x),
     if (type == 'html') '<details><summary>**Expand for Demographic Table**</summary>',
     '```{r results = \'asis\'}', 
-    'set_flextable_defaults(font.size = 9)', # ?flextable::set_flextable_defaults
+    'flextable::set_flextable_defaults(font.size = 9)',
     paste0('as_flextable.DemographicTable(', xnm, ')'), 
-    'init_flextable_defaults()', # ?flextable::init_flextable_defaults
+    'flextable::init_flextable_defaults()',
     '```', 
     '</details>',
     '<any-text>'
