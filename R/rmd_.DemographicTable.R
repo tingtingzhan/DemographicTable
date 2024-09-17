@@ -12,6 +12,9 @@
 #' 
 #' @param ... additional parameters, currently not in use
 #' 
+#' @returns 
+#' Function [rmd_.DemographicTable] returns a \link[base]{character} \link[base]{vector}.
+#' 
 #' @export rmd_.DemographicTable
 #' @export
 rmd_.DemographicTable <- function(x, xnm, type, ...) {

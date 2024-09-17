@@ -15,6 +15,9 @@ rmd_.DemographicTable(x, xnm, type, ...)
 
 \item{...}{additional parameters, currently not in use}
 }
+\value{
+Function \link{rmd_.DemographicTable} returns a \link[base]{character} \link[base]{vector}.
+}
 \description{
 Method dispatch to \link{DemographicTable} for S3 generic \code{rmd_} (in a different master package).
 }
