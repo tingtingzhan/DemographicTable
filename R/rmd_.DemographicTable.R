@@ -2,11 +2,11 @@
 #' @title Create R Markdown Script for [DemographicTable]
 #' 
 #' @description
-#' Method dispatch to [DemographicTable] for S3 generic `rmd_` (in a different master package).
+#' Method dispatch to [DemographicTable] for S3 generic `rmd_` (in a secret master package).
 #' 
 #' @param x a [DemographicTable]
 #' 
-#' @param xnm \link[base]{language} or \link[base]{character} scalar, call of `x`
+#' @param xnm \link[base]{character} scalar, call of `x`
 #' 
 #' @param type ..
 #' 
@@ -17,9 +17,19 @@
 #' 
 #' @export rmd_.DemographicTable
 #' @export
-rmd_.DemographicTable <- function(x, xnm, type, ...) {
+rmd_.DemographicTable <- function(x, xnm, type = 'html', ...) {
+  
+  data.name <- attr(x, which = 'data.name', exact = TRUE)
+  
   return(c(
-    Sprintf.DemographicTable(x),
+    
+    if (length(groups <- attr(x, which = 'groups', exact = TRUE))) {
+      sprintf(fmt = 'Descriptive statistics, e.g., means, medians, standard deviations, inter-quartile ranges (IQR) and percentages, of all subjects in dataset `%s`, as well as for each group of %s, are provided using <u>**`R`**</u>.',
+              data.name,
+              paste0('`', groups, '`', collapse = ', '))
+      
+    } else sprintf(fmt = 'Descriptive statistics, e.g., means, medians, standard deviations, inter-quartile ranges (IQR) and percentages, of all subjects in dataset `%s` are provided using <u>**`R`**</u>.', data.name),
+    
     if (type == 'html') '<details><summary>**Expand for Demographic Table**</summary>',
     '```{r results = \'asis\'}', 
     'flextable::set_flextable_defaults(font.size = 9)',
@@ -27,6 +37,8 @@ rmd_.DemographicTable <- function(x, xnm, type, ...) {
     'flextable::init_flextable_defaults()',
     '```', 
     '</details>',
+    
     '<any-text>'
+    
   ))
 }
