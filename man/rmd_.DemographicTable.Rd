@@ -11,7 +11,8 @@ rmd_.DemographicTable(x, xnm, type = "html", ...)
 
 \item{xnm}{\link[base]{character} scalar, call of \code{x}}
 
-\item{type}{..}
+\item{type}{\link[base]{character} scalar, type of \CRANpkg{rmarkdown} document.
+Default \code{'html'}}
 
 \item{...}{additional parameters, currently not in use}
 }

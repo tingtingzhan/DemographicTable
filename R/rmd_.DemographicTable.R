@@ -8,7 +8,8 @@
 #' 
 #' @param xnm \link[base]{character} scalar, call of `x`
 #' 
-#' @param type ..
+#' @param type \link[base]{character} scalar, type of \CRANpkg{rmarkdown} document.
+#' Default `'html'`
 #' 
 #' @param ... additional parameters, currently not in use
 #' 
