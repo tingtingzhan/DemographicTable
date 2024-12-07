@@ -4,15 +4,14 @@
 \alias{rmd_.DemographicTable}
 \title{Create R Markdown Script for \link{DemographicTable}}
 \usage{
-rmd_.DemographicTable(x, xnm, type = "html", ...)
+rmd_.DemographicTable(x, xnm, autofold = TRUE, ...)
 }
 \arguments{
 \item{x}{a \link{DemographicTable}}
 
 \item{xnm}{\link[base]{character} scalar, call of \code{x}}
 
-\item{type}{\link[base]{character} scalar, type of \CRANpkg{rmarkdown} document.
-Default \code{'html'}}
+\item{autofold}{\link[base]{logical} scalar}
 
 \item{...}{additional parameters, currently not in use}
 }

@@ -8,8 +8,7 @@
 #' 
 #' @param xnm \link[base]{character} scalar, call of `x`
 #' 
-#' @param type \link[base]{character} scalar, type of \CRANpkg{rmarkdown} document.
-#' Default `'html'`
+#' @param autofold \link[base]{logical} scalar
 #' 
 #' @param ... additional parameters, currently not in use
 #' 
@@ -18,20 +17,20 @@
 #' 
 #' @export rmd_.DemographicTable
 #' @export
-rmd_.DemographicTable <- function(x, xnm, type = 'html', ...) {
+rmd_.DemographicTable <- function(x, xnm, autofold = TRUE, ...) {
   
-  data.name <- attr(x, which = 'data.name', exact = TRUE)
+  dnm <- vapply(x, FUN = attr, which = 'data.name', exact = TRUE, FUN.VALUE = '')[1L]
   
   return(c(
     
     if (length(groups <- attr(x, which = 'groups', exact = TRUE))) {
       sprintf(fmt = 'Descriptive statistics, e.g., means, medians, standard deviations, inter-quartile ranges (IQR) and percentages, of all subjects in dataset `%s`, as well as for each group of %s, are provided using <u>**`R`**</u>.',
-              data.name,
+              dnm,
               paste0('`', groups, '`', collapse = ', '))
       
-    } else sprintf(fmt = 'Descriptive statistics, e.g., means, medians, standard deviations, inter-quartile ranges (IQR) and percentages, of all subjects in dataset `%s` are provided using <u>**`R`**</u>.', data.name),
+    } else sprintf(fmt = 'Descriptive statistics, e.g., means, medians, standard deviations, inter-quartile ranges (IQR) and percentages, of all subjects in dataset `%s` are provided using <u>**`R`**</u>.', dnm),
     
-    if (type == 'html') '<details><summary>**Expand for Demographic Table**</summary>',
+    if (autofold) '<details><summary>**Expand for Demographic Table**</summary>',
     '```{r results = \'asis\'}', 
     'flextable::set_flextable_defaults(font.size = 9)',
     paste0('as_flextable.DemographicTable(', xnm, ')'), 
