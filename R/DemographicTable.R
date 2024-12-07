@@ -13,11 +13,6 @@
 #' the name(s) of sub-group(s) for which the summary statistics are to be provided.
 #' Default `NULL` indicating no sub-groups.
 #' 
-#' @param keep_missing_group \link[base]{logical} scalar.
-#' If `TRUE` (default), the subjects with missing `group`
-#' are put into a new group (`'.missing'`).
-#' if `FALSE`, these subjects are removed from group-wise summary statistics.
-#' 
 #' @param exclude \link[base]{character} \link[base]{vector}, 
 #' the name(s) of variable(s) to be excluded.  
 #' Default `NULL` indicating no variable are to be excluded.
@@ -71,29 +66,21 @@
 #' Function [DemographicTable] returns an object of S3 class `'DemographicTable'`, 
 #' which inherits from \link[base]{matrix}.
 #' 
-#' @importFrom stats aov chisq.test fisher.test kruskal.test mcnemar.test pairwise.prop.test pairwise.t.test pairwise.wilcox.test prop.test quantile t.test var wilcox.test
+#' @importFrom stats aov chisq.test fisher.test kruskal.test mcnemar.test pairwise.prop.test pairwise.t.test pairwise.wilcox.test prop.test quantile t.test sd wilcox.test
 #' 
 #' @examples 
-#' DemographicTable(esoph)
-#' DemographicTable(ToothGrowth, groups = 'supp', include = 'len')
-#' DemographicTable(ToothGrowth, groups = 'supp', include = 'len', paired = TRUE)
-#' DemographicTable(ToothGrowth, groups = 'supp', include = 'len', compare = FALSE)
-#' DemographicTable(warpbreaks, groups = c('wool', 'tension'))
-#' DemographicTable(mtcars, groups = c('vs', 'am'), include = c('mpg', 'cyl', 'disp'))
+#' tgr = within(ToothGrowth, expr = { dose = factor(dose) })
+#' DemographicTable(tgr, include = c('supp', 'len', 'dose'))
+#' DemographicTable(tgr, groups = 'supp', include = c('len', 'dose'))
+#' DemographicTable(tgr, groups = 'supp', include = 'len', paired = TRUE)
+#' DemographicTable(tgr, groups = 'supp', include = 'len', compare = FALSE)
+#' DemographicTable(tgr, groups = c('supp', 'dose'), include = 'len')
+#' 
+#' car = within(mtcars, expr = { vs = as.logical(vs) })
+#' DemographicTable(car, groups = 'am', include = c('vs', 'mpg', 'cyl', 'disp'))
 #' 
 #' # with missing value
-#' DemographicTable(airquality, groups = 'Month', exclude = 'Day')
-#' DemographicTable(MASS::survey, groups = 'Smoke', keep_missing_group = FALSE)
-#' DemographicTable(MASS::survey, groups = 'Smoke', keep_missing_group = FALSE, useNA = 'always')
-#' 
-#' # write to Word file
-#' library(flextable)
-#' library(officer)
-#' x = read_docx() |> body_add_flextable(value = as_flextable(DemographicTable(esoph)))
-#' (out = file.path(tempdir(), 'demotable.docx'))
-#' print(x, target = out)
-#' # system(paste('open', out)) # works on Mac & Windows, but requires Microsoft Word
-#' file.remove(out)
+#' tryCatch(DemographicTable(MASS::survey, groups = 'Smoke'), warning = identity)
 #' 
 #' @name DemographicTable
 #' @export
@@ -105,7 +92,7 @@ DemographicTable <- function(data, ...) UseMethod('DemographicTable')
 #' @export
 DemographicTable.data.frame <- function(
     data, data.name = substitute(data), 
-    groups = NULL, keep_missing_group = TRUE,
+    groups = NULL,
     exclude = NULL, exclude_pattern, 
     include, include_pattern, 
     paired = FALSE,
@@ -117,6 +104,9 @@ DemographicTable.data.frame <- function(
 ) {
   
   force(data.name)
+  if (is.character(data.name)) {
+    if (length(data.name) != 1L || anyNA(data.name) || !nzchar(data.name)) stop('illegal data.name')
+  } else data.name <- deparse1(data.name)
   
   if (!is.data.frame(data)) stop('input must be data.frame')
   data <- as.data.frame(data) # use S3
@@ -165,14 +155,11 @@ DemographicTable.data.frame <- function(
   
   if (length(groups)) {
     
-    if (keep_missing_group) {
-      for (ig in groups) {
-        if (any(id <- is.na(data[[ig]]))) {
-          data[[ig]] <- as.character(data[[ig]])
-          data[[ig]][id] <- '.missing'
-        }# else do nothing
-      }
-    } # else do nothing!!!!
+    for (ig in groups) {
+      if (any(id <- is.na(data[[ig]]))) {
+        warning('Column ', sQuote(ig), ' has ', sum(id), ' missing values')
+      }# else do nothing
+    }
     
     for (ig in groups) {
       igv <- data[[ig]]
@@ -212,24 +199,12 @@ DemographicTable.data.frame <- function(
   
   overall <- overall & !paired
   
-  ret <- if (overall) DemographicSummaries(data, vlst = vlst, ...) # else NULL      
+  ret0 <- if (overall) list(.sumtab(data, data.name = data.name, vlst = vlst, ...)) # else NULL      
+  ret1 <- if (length(groups)) lapply(groups, FUN = .sumtab_by, data = data, data.name = data.name, vlst = vlst, compare = compare, paired = paired, robust = robust, pairwise = pairwise, ...)
+  ret <- c(ret0, ret1)
+  if (!length(ret)) stop('wont happen')
   
-  if (length(groups)) {
-    ret_by <- lapply(groups, FUN = demoTab_by, data = data, vlst = vlst, compare = compare, paired = paired, robust = robust, pairwise = pairwise, ...)
-    rets <- if (length(ret)) c(list(ret), ret_by) else ret_by
-    # is_equal(rets, FUN = function(x) dimnames(x)[[1L]])
-    ret <- do.call(cbind, args = rets)
-    attr(ret, which = 'groups') <- groups
-    attr(ret, which = 'test') <- unique.default(unlist(lapply(ret_by, FUN = attr, which = 'test', exact = TRUE), use.names = FALSE))
-    attr(ret, which = 'ncols') <- vapply(rets, FUN = function(x) dim(x)[2L], FUN.VALUE = 0L)
-  } else if (!overall) {
-    stop('must do at least `overall` or by-`groups`')
-  }
-
-  attr(ret, which = 'data.name') <- if (is.character(data.name)) {
-    if (length(data.name) != 1L || anyNA(data.name) || !nzchar(data.name)) stop('illegal data.name')
-    data.name
-  } else deparse1(data.name)
+  #attr(ret, which = 'data.name') <- data.name
   class(ret) <- c('DemographicTable', class(ret))
   return(ret)
   
@@ -243,43 +218,44 @@ DemographicTable.data.frame <- function(
 ## work horse
 ##################
 
-DemographicSummaries <- function(data, vlst, fmt = '%.1f', ...) {# useNA = c('no', 'always'), 
-  
-  #useNA <- match.arg(useNA) # 'ifany' is not allowed
+.sumtab <- function(data, data.name, vlst, fmt = '%.1f', ...) {# useNA = c('no', 'always'), 
   
   out_num <- if (length(.num <- c(vlst$integer, vlst$numeric))) {
     names(.num) <- .num
-    unlist(lapply(data[.num], FUN = summaryText.default, fmt = fmt, ...), use.names = TRUE)
+    unlist(lapply(data[.num], FUN = .sumstat.default, fmt = fmt, ...), use.names = TRUE)
   } #else NULL
   
   out_difft <- if (length(.difft <- vlst$difftime)) {
     d_difft <- data[.difft]
     names(d_difft) <- paste0(.difft, ' (', vapply(data[.difft], FUN = attr, which = 'units', exact = TRUE, FUN.VALUE = ''), ')') # ?base::units.difftime
-    unlist(lapply(d_difft, FUN = summaryText.default, fmt = fmt, ...), use.names = TRUE)
+    unlist(lapply(d_difft, FUN = .sumstat.default, fmt = fmt, ...), use.names = TRUE)
   } #else NULL
   
   out_bool <- if (length(.bool <- vlst$logical)) {
     d_bool <- data[.bool]
     names(d_bool) <- paste0(.bool, ': n (%)')
-    vapply(d_bool, FUN = summaryText.logical, fmt = fmt, ..., FUN.VALUE = '')
+    vapply(d_bool, FUN = .sumstat.logical, fmt = fmt, ..., FUN.VALUE = '')
   } #else NULL
   
   out_factor <- if (length(.fact <- c(vlst$character, vlst$factor, vlst$ordered))) {
     d_fact <- data[.fact]
     names(d_fact) <- paste0(.fact, ': n (%)')
-    unlist(lapply(d_fact, FUN = summaryText, fmt = fmt, ...), use.names = TRUE) # useNA = useNA, 
+    unlist(lapply(d_fact, FUN = .sumstat, fmt = fmt, ...), use.names = TRUE) 
   } #else NULL
 
-  ret <- c(out_num, out_difft, out_bool, out_factor)
-  array(ret, dim = c(length(ret), 1L), 
-        dimnames = list(names(ret), paste0('N=', .row_names_info(data, type = 2L))))
-   
+  ret0 <- c(out_num, out_difft, out_bool, out_factor)
+  ret <- array(ret0, dim = c(length(ret0), 1L), 
+        dimnames = list(names(ret0), paste0('N=', .row_names_info(data, type = 2L))))
+  attr(ret, which = 'data.name') <- data.name
+  attr(ret, which = 'group') <- '' # important
+  class(ret) <- c('sumtab', class(ret))
+  return(ret)
 }
 
 
 
 
-demoTab_by <- function(data, vlst, group, robust = TRUE, compare = TRUE, paired = FALSE, pairwise = 3L, ...) { # SMD = FALSE, 
+.sumtab_by <- function(data, data.name, vlst, group, robust = TRUE, compare = TRUE, paired = FALSE, pairwise = 3L, ...) { # SMD = FALSE, 
   
   if (!is.character(group) || length(group) != 1L || anyNA(group) || !nzchar(group)) stop('`group` must be len-1 character')
   
@@ -288,11 +264,14 @@ demoTab_by <- function(data, vlst, group, robust = TRUE, compare = TRUE, paired 
   gN <- lengths(gidx, use.names = FALSE)
   
   ret <- do.call(cbind, args = lapply(gidx, FUN = function(id) { # (id = gidx[[1L]])
-    DemographicSummaries(data[id, , drop = FALSE], vlst = vlst, ...)
+    .sumtab(data[id, , drop = FALSE], data.name = '', vlst = vlst, ...)
   }))
   colnames(ret) <- if (!paired) {
-    sprintf(fmt = '%s\n= %s\nN=%d (%.1f%%)', group, names(gidx), gN, 1e2*gN/sum(gN))
-  } else sprintf(fmt = '%s\n= %s\nN=%d', group, names(gidx), gN)
+    sprintf(fmt = '%s\nN=%d (%.1f%%)', names(gidx), gN, 1e2*gN/sum(gN))
+  } else sprintf(fmt = '%s\nN=%d', names(gidx), gN)
+  #colnames(ret) <- if (!paired) {
+  #  sprintf(fmt = '%s\n= %s\nN=%d (%.1f%%)', group, names(gidx), gN, 1e2*gN/sum(gN))
+  #} else sprintf(fmt = '%s\n= %s\nN=%d', group, names(gidx), gN)
   
   # removing single 'group' for p-values
   txt_g1 <- if (any(g1 <- (gN == 1L))) {
@@ -310,10 +289,13 @@ demoTab_by <- function(data, vlst, group, robust = TRUE, compare = TRUE, paired 
     pval <- c(p_double, p_bool, p_factor)
     if (dim(ret)[1L] != length(pval)) stop('demographic table contruction wrong: pval do not match summary stats')
     ret_compare <- as.matrix(pval)
-    colnames(ret_compare) <- paste0('Significance\n(by ', group, ')\n', txt_g1)
+    colnames(ret_compare) <- paste(c('Signif', txt_g1), collapse = '\n')
   } else ret_compare <- NULL
   
   ret <- cbind(ret, ret_compare)
+  attr(ret, which = 'group') <- group
+  attr(ret, which = 'data.name') <- data.name
+  class(ret) <- c('sumtab', class(ret))
   return(ret)
 
 }
@@ -321,92 +303,6 @@ demoTab_by <- function(data, vlst, group, robust = TRUE, compare = TRUE, paired 
 
 
 
-
-
-
-#' @title Convert [DemographicTable] to \link[flextable]{flextable}
-#' 
-#' @description 
-#' Convert a [DemographicTable] to \link[flextable]{flextable} object.
-#' 
-#' @param x a [DemographicTable] object
-#' 
-#' @param ... potential additional parameters, not currently in use 
-#' 
-#' @returns 
-#' 
-#' Function [as_flextable.DemographicTable] returns a \link[flextable]{flextable} object.
-#' 
-#' @note
-#' 
-#' End user may use \link[flextable]{set_caption} to add a caption to the output demographic table.
-#'
-#' @importFrom flextable as_flextable flextable autofit hline vline
-#' @export as_flextable.DemographicTable
-#' @export
-as_flextable.DemographicTable <- function(x, ...) {
-  x1 <- data.frame(' ' = dimnames(x)[[1L]], unclass(x), row.names = NULL, check.names = FALSE, fix.empty.names = FALSE, stringsAsFactors = FALSE)
-  names(x1)[1L] <- attr(x, which = 'data.name', exact = TRUE)
-  
-  y0 <- autofit(flextable(data = x1), part = 'all')
-  y1 <- hline(y0, i = seq_len(dim(x)[1L] - 1L))
-  nc <- attr(x, which = 'ncols', exact = TRUE)
-  ret <- vline(y1, j = c(1L, 1L + cumsum(nc[-length(nc)])))
-  return(ret) 
-}
-
-
-# ?base::print'
-# @export print.DemographicTable
-#' @export
-print.DemographicTable <- function(x, ...) print(as_flextable.DemographicTable(x, ...))
-
-
-
-#' @title Write [DemographicTable] to LaTeX
-#' 
-#' @description Write [DemographicTable] to LaTeX.
-#' 
-#' @param x a [DemographicTable] object
-#' 
-#' @param ... additional parameters of \link[xtable]{xtable}
-#' 
-#' @returns 
-#' 
-#' Function [xtable.DemographicTable] returns an \link[xtable]{xtable} object.
-#' 
-#' @examples 
-#' (tb = DemographicTable(ToothGrowth, groups = 'supp'))
-#' library(xtable)
-#' print(xtable(tb), sanitize.text.function = identity, 
-#'  sanitize.colnames.function = NULL, include.rownames = FALSE)
-#' 
-#' @importFrom xtable xtable
-#' @export xtable.DemographicTable
-#' @export
-xtable.DemographicTable <- function(x, ...) {
-  row_break <- function(x) {
-    # `x` is row-1 matrix
-    x0 <- c(rownames(x), x)
-    x0 <- gsub('\u00B1', replacement = '\\\\pm ', x = x0)
-    x0 <- gsub('\u2713', replacement = '\\\\checkmark ', x = x0)
-    x0 <- gsub('\u26A0', replacement = '\\\\times ', x = x0)
-    y0 <- strsplit(x0, split = '\n')
-    ny <- lengths(y0, use.names = FALSE)
-    n <- max(ny)
-    y1 <- lapply(y0, FUN = function(i) c(i, rep('', times = n - length(i))))
-    do.call(cbind, args = y1)
-  }
-  
-  y0 <- do.call(rbind, args = lapply(seq_len(dim(x)[1L]), FUN = function(i) {
-    row_break(x[i, , drop = FALSE])
-  }))
-  cnm <- gsub(pattern = '\\n', replacement = ' ', dimnames(unclass(x))[[2L]])
-  colnames(y0) <- c(attr(x, which = 'data.name', exact = TRUE), cnm)
-  
-  y1 <- as.data.frame.matrix(y0, make.names = FALSE, row.names = FALSE)
-  return(xtable(y1, ...))
-}
 
 
 
@@ -466,14 +362,17 @@ compare_double <- function(xs, CLT = TRUE, robust = TRUE, pairwise = 3L, alterna
       test <- tryCatch(suppressWarnings(wilcox.test(x = xs[[2L]], y = xs[[1L]], paired = paired, exact = FALSE, conf.int = TRUE, alternative = alternative)), error = identity)
       if (inherits(test, what = 'error')) return('')
       est <- test$estimate # whether `paired` or not
-      fmt <- paste0('Median diff: %.3f\n95%% CI (%.3f, %.3f)\np = %.3f', symb(test$p.value), '\n', if (paired) 'Paired ', 'Wilcoxon-\nMann-Whitney')
+      #fmt <- paste0('Median diff: %.3f\n95%% CI (%.3f, %.3f)\np = %.3f', symb(test$p.value), '\n', if (paired) 'Paired ', 'Wilcoxon-\nMann-Whitney')
+      fmt <- paste0('%.3f', symb(test$p.value), '\n', if (paired) 'Paired ', 'Wilcoxon-\nMann-Whitney')
     } else {
       test <- t.test(x = xs[[2L]], y = xs[[1L]], paired = paired, alternative = alternative)
       if (is.na(test$statistic)) return('') # very likely identical(x, y) in ?stats::t.test
       est <- if (paired) test$estimate else test$estimate[1L] - test$estimate[2L]
-      fmt <- paste0('Mean diff: %.3f\n95%% CI (%.3f, %.3f)\np = %.3f', symb(test$p.value), '\n', if (paired) 'Paired' else 'Two-Sample', ' t')
+      #fmt <- paste0('Mean diff: %.3f\n95%% CI (%.3f, %.3f)\np = %.3f', symb(test$p.value), '\n', if (paired) 'Paired' else 'Two-Sample', ' t')
+      fmt <- paste0('%.3f', symb(test$p.value), '\n', if (paired) 'Paired' else 'Two-Sample', ' t')
     }
-    return(sprintf(fmt = fmt, est, test$conf.int[1L], test$conf.int[2L], test$p.value))
+    #return(sprintf(fmt = fmt, est, test$conf.int[1L], test$conf.int[2L], test$p.value))
+    return(sprintf(fmt = fmt, test$p.value))
   }
 
   if (!is.numeric(pairwise) || length(pairwise) != 1L || anyNA(pairwise) || pairwise < 2L) stop('illegal `pairwise`')
@@ -609,4 +508,13 @@ compare_factor <- function(x, g, paired = FALSE, ...) {
 
 
 
+# # write to Word file
+# library(flextable)
+# library(officer)
+# x = read_docx() |> body_add_flextable(value = as_flextable(DemographicTable(esoph)))
+# (out = file.path(tempdir(), 'demotable.docx'))
+# print(x, target = out)
+# # system(paste('open', out)) # works on Mac & Windows, but requires Microsoft Word
+# file.remove(out)
+# 
 

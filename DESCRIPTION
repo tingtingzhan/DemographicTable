@@ -14,12 +14,12 @@ Description: Functions for creating demographic table with simple
        chi-squared test and/or Fisher's exact test.
 License: GPL-2
 Encoding: UTF-8
-Imports: flextable, e1071, xtable
+Imports: flextable
 Authors@R: c(person(given = "Tingting", family = "Zhan", role =
        c("aut", "cre", "cph"), email = c("tingtingzhan@gmail.com"),
        comment = c(ORCID = '0000-0001-9971-4844')))
 Language: en-US
 Roxygen: list(markdown = TRUE)
 Depends: R (>= 4.4.0)
-Suggests: officer, MASS
+Suggests: MASS
 RoxygenNote: 7.3.2

@@ -11,7 +11,6 @@ DemographicTable(data, ...)
   data,
   data.name = substitute(data),
   groups = NULL,
-  keep_missing_group = TRUE,
   exclude = NULL,
   exclude_pattern,
   include,
@@ -35,11 +34,6 @@ A user-friendly name of the input \code{data}.}
 \item{groups}{\link[base]{character} scalar or \link[base]{vector},
 the name(s) of sub-group(s) for which the summary statistics are to be provided.
 Default \code{NULL} indicating no sub-groups.}
-
-\item{keep_missing_group}{\link[base]{logical} scalar.
-If \code{TRUE} (default), the subjects with missing \code{group}
-are put into a new group (\code{'.missing'}).
-if \code{FALSE}, these subjects are removed from group-wise summary statistics.}
 
 \item{exclude}{\link[base]{character} \link[base]{vector},
 the name(s) of variable(s) to be excluded.
@@ -94,25 +88,17 @@ If \code{group} is specified, they are compared using \link[stats]{prop.test} (c
 and/or \link[stats]{fisher.test} (Fisher's exact).
 }
 \examples{
-DemographicTable(esoph)
-DemographicTable(ToothGrowth, groups = 'supp', include = 'len')
-DemographicTable(ToothGrowth, groups = 'supp', include = 'len', paired = TRUE)
-DemographicTable(ToothGrowth, groups = 'supp', include = 'len', compare = FALSE)
-DemographicTable(warpbreaks, groups = c('wool', 'tension'))
-DemographicTable(mtcars, groups = c('vs', 'am'), include = c('mpg', 'cyl', 'disp'))
+tgr = within(ToothGrowth, expr = { dose = factor(dose) })
+DemographicTable(tgr, include = c('supp', 'len', 'dose'))
+DemographicTable(tgr, groups = 'supp', include = c('len', 'dose'))
+DemographicTable(tgr, groups = 'supp', include = 'len', paired = TRUE)
+DemographicTable(tgr, groups = 'supp', include = 'len', compare = FALSE)
+DemographicTable(tgr, groups = c('supp', 'dose'), include = 'len')
+
+car = within(mtcars, expr = { vs = as.logical(vs) })
+DemographicTable(car, groups = 'am', include = c('vs', 'mpg', 'cyl', 'disp'))
 
 # with missing value
-DemographicTable(airquality, groups = 'Month', exclude = 'Day')
-DemographicTable(MASS::survey, groups = 'Smoke', keep_missing_group = FALSE)
-DemographicTable(MASS::survey, groups = 'Smoke', keep_missing_group = FALSE, useNA = 'always')
-
-# write to Word file
-library(flextable)
-library(officer)
-x = read_docx() |> body_add_flextable(value = as_flextable(DemographicTable(esoph)))
-(out = file.path(tempdir(), 'demotable.docx'))
-print(x, target = out)
-# system(paste('open', out)) # works on Mac & Windows, but requires Microsoft Word
-file.remove(out)
+tryCatch(DemographicTable(MASS::survey, groups = 'Smoke'), warning = identity)
 
 }
