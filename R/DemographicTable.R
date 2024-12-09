@@ -76,8 +76,10 @@
 #' DemographicTable(tgr, groups = 'supp', include = 'len', compare = FALSE)
 #' DemographicTable(tgr, groups = c('supp', 'dose'), include = 'len')
 #' 
-#' car = within(mtcars, expr = { vs = as.logical(vs) })
-#' DemographicTable(car, groups = 'am', include = c('vs', 'mpg', 'cyl', 'disp'))
+#' (tb1 = DemographicTable(CO2, groups = 'Type', include = c('conc', 'uptake')))
+#' CO2_nonchilled = subset(CO2, Treatment == 'nonchilled')
+#' (tb2 = DemographicTable(CO2_nonchilled, groups = 'Type', include = c('conc', 'uptake')))
+#' c(tb1, tb2)
 #' 
 #' # with missing value
 #' tryCatch(DemographicTable(MASS::survey, groups = 'Smoke'), warning = identity)
@@ -157,7 +159,7 @@ DemographicTable.data.frame <- function(
     
     for (ig in groups) {
       if (any(id <- is.na(data[[ig]]))) {
-        warning('Column ', sQuote(ig), ' has ', sum(id), ' missing values')
+        warning('Group-variable ', sQuote(ig), ' has ', sum(id), ' missing values')
       }# else do nothing
     }
     
@@ -214,6 +216,26 @@ DemographicTable.data.frame <- function(
 
 
 
+
+#' @title Concatenate [DemographicTable] Objects
+#' 
+#' @param ... one or more [DemographicTable] objects
+#' 
+#' @details
+#' Function [c.DemographicTable] returns a [DemographicTable] object.
+#' 
+#' @export c.DemographicTable
+#' @export
+c.DemographicTable <- function(...) {
+  ret <- do.call(c, args = lapply(list(...), FUN = unclass))
+  class(ret) <- c('DemographicTable', class(ret))
+  return(ret)
+}
+
+
+
+
+
 ##################
 ## work horse
 ##################
@@ -244,8 +266,10 @@ DemographicTable.data.frame <- function(
   } #else NULL
 
   ret0 <- c(out_num, out_difft, out_bool, out_factor)
-  ret <- array(ret0, dim = c(length(ret0), 1L), 
-        dimnames = list(names(ret0), paste0('N=', .row_names_info(data, type = 2L))))
+  ret <- array(ret0, dim = c(length(ret0), 1L), dimnames = list(
+    names(ret0), 
+    paste0('N=', .row_names_info(data, type = 2L))
+  ))
   attr(ret, which = 'data.name') <- data.name
   attr(ret, which = 'group') <- '' # important
   class(ret) <- c('sumtab', class(ret))

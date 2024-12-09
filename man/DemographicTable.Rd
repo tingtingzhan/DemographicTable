@@ -95,8 +95,10 @@ DemographicTable(tgr, groups = 'supp', include = 'len', paired = TRUE)
 DemographicTable(tgr, groups = 'supp', include = 'len', compare = FALSE)
 DemographicTable(tgr, groups = c('supp', 'dose'), include = 'len')
 
-car = within(mtcars, expr = { vs = as.logical(vs) })
-DemographicTable(car, groups = 'am', include = c('vs', 'mpg', 'cyl', 'disp'))
+(tb1 = DemographicTable(CO2, groups = 'Type', include = c('conc', 'uptake')))
+CO2_nonchilled = subset(CO2, Treatment == 'nonchilled')
+(tb2 = DemographicTable(CO2_nonchilled, groups = 'Type', include = c('conc', 'uptake')))
+c(tb1, tb2)
 
 # with missing value
 tryCatch(DemographicTable(MASS::survey, groups = 'Smoke'), warning = identity)

@@ -17,7 +17,8 @@
 #' 
 #' End user may use \link[flextable]{set_caption} to add a caption to the output demographic table.
 #'
-#' @importFrom flextable as_flextable flextable autofit hline vline merge_v
+#' @importFrom flextable as_flextable flextable autofit hline vline merge_v merge_h
+#' @importFrom officer fp_border
 #' @export as_flextable.DemographicTable
 #' @export
 as_flextable.DemographicTable <- function(x, ...) {
@@ -28,33 +29,40 @@ as_flextable.DemographicTable <- function(x, ...) {
   x0 <- do.call(cbind, args = x)
   group <- vapply(x, FUN = attr, which = 'group', exact = TRUE, FUN.VALUE = '')
   nc <- vapply(x, FUN = ncol, FUN.VALUE = NA_integer_)
-  dnm0 <- vapply(x, FUN = attr, which = 'data.name', exact = TRUE, FUN.VALUE = '')
-  if (!all(duplicated(dnm0)[-1L])) stop('rownames not all-same')
-  dnm <- dnm0[1L]
+  dnm <- vapply(x, FUN = attr, which = 'data.name', exact = TRUE, FUN.VALUE = '')
   
   x1 <- data.frame(' ' = dimnames(x0)[[1L]], unclass(x0), row.names = NULL, check.names = FALSE, fix.empty.names = FALSE, stringsAsFactors = FALSE)
   xnm <- names(x1)
-  xnm[1L] <- dnm
   if (sum(sig_id <- (xnm == 'Signif')) > 1L) {
     xnm[sig_id] <- paste0('Signif', seq_len(sum(sig_id)))
   }
   names(x1) <- xnm
   
-  ret0 <- flextable(data = x1) |> 
+  v_hard <- c(1L, 1L + cumsum(nc[-length(nc)]))
+  v_soft <- setdiff(seq_len(sum(nc)), v_hard)
+    
+  ret0 <- x1 |> flextable() |> 
     autofit(part = 'all') |>
     hline(i = seq_len(dim(x0)[1L] - 1L)) |>
-    vline(j = c(1L, 1L + cumsum(nc[-length(nc)])))
-  
-  if (all(!nzchar(group))) return(ret0)
-    
-  id_n <- !nzchar(group) # to be filled with sample size
-  group[id_n] <- vapply(x[id_n], FUN = colnames, FUN.VALUE = '')
-  ret0 |> 
-    add_header_row(values = c(dnm, group), colwidths = c(1, nc), top = TRUE) |>
-    align(i = 1L, j = NULL, align = 'center', part = 'header') |>
-    merge_v(part = 'header')
+    vline(j = v_hard) |>
+    vline(j = v_soft, border = fp_border(width = .5))
+
+  ret1 <- if (any(nz_grp <- nzchar(group))) {
+    group[!nz_grp] <- vapply(x[!nz_grp], FUN = colnames, FUN.VALUE = '')
+    ret0 |> 
+      add_header_row(values = c(' ', group), colwidths = c(1, nc), top = TRUE) |>
+      merge_v(part = 'header') 
+  } else ret0
+
+  ret1 |> 
+    add_header_row(values = c(' ', dnm), colwidths = c(1, nc), top = TRUE) |>
+    merge_h(part = 'header') |>
+    merge_v(part = 'header') |>
+    align(i = NULL, j = NULL, align = 'center', part = 'header') 
   
 }
+
+
 
 
 #' @importFrom flextable autofit flextable hline vline align add_header_row merge_v
