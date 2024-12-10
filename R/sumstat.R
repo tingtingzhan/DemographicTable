@@ -111,7 +111,7 @@
   
   ret <- character()
   ret <- c(ret, if (!all(xok)) paste0('N*=', sum(xok)) else '')
-  ret <- c(ret, ifelse(ct == 0L, yes = '-', no = sprintf(fmt = '%d (%.0f%%)', ct, 1e2*ct/sum(ct))))
+  ret <- c(ret, ifelse(ct == 0L, yes = '-', no = sprintf(fmt = '%d (%.1f%%)', ct, 1e2*ct/sum(ct))))
   # decimal point of percentage is hard-coded
   return(setNames(paste(ret, collapse = '\n'), nm = nm))
   
@@ -141,7 +141,7 @@
   ct1 <- sum(x[xok])
   ret <- character()
   ret <- c(ret, if (!all(xok)) paste0('N*=', sum(xok)) else NULL) # not `else ''`
-  ret <- c(ret, if (ct1 == 0L) '-' else sprintf(fmt = '%d (%.0f%%)', ct1, 1e2*ct1/sum(xok)))
+  ret <- c(ret, if (ct1 == 0L) '-' else sprintf(fmt = '%d (%.1f%%)', ct1, 1e2*ct1/sum(xok)))
   # decimal point of percentage is hard-coded
   paste(ret, collapse = '\n')
 }
