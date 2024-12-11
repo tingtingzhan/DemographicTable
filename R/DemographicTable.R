@@ -144,7 +144,8 @@ DemographicTable.data.frame <- function(
     include <- include[!id]
   }
   
-  data <- data[c(sort.default(include), groups)]
+  include <- sort.default(include)
+  data <- data[c(include, groups)]
   
   for (i in include) {
     if (is.character(data[[i]])) data[[i]] <- factor(data[[i]]) 
