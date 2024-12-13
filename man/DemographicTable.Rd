@@ -39,17 +39,15 @@ Default \code{NULL} indicating no sub-groups.}
 the name(s) of variable(s) to be excluded.
 Default \code{NULL} indicating no variable are to be excluded.}
 
-\item{exclude_pattern}{(optional) \link[base]{character} scalar as
-\link[base]{regex} (regular expression),
-the pattern of the names of the variable(s) to be excluded.}
+\item{exclude_pattern}{(optional) \link[base]{regex},
+pattern of the names of the variable(s) to be excluded.}
 
 \item{include}{\link[base]{character} \link[base]{vector},
 the name(s) of variable(s) to be included.
 Default \code{names(data)} indicating all variables are to be included.}
 
-\item{include_pattern}{(optional) \link[base]{character} scalar as
-\link[base]{regex} (regular expression),
-the pattern of the names of the variable(s) to be included.}
+\item{include_pattern}{(optional) \link[base]{regex},
+pattern of the names of the variable(s) to be included.}
 
 \item{paired}{\link[base]{logical} scalar, whether to perform paired test (default \code{FALSE})}
 

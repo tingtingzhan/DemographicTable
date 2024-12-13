@@ -17,17 +17,15 @@
 #' the name(s) of variable(s) to be excluded.  
 #' Default `NULL` indicating no variable are to be excluded.
 #' 
-#' @param exclude_pattern (optional) \link[base]{character} scalar as 
-#' \link[base]{regex} (regular expression), 
-#' the pattern of the names of the variable(s) to be excluded. 
+#' @param exclude_pattern (optional) \link[base]{regex}, 
+#' pattern of the names of the variable(s) to be excluded. 
 #' 
 #' @param include \link[base]{character} \link[base]{vector}, 
 #' the name(s) of variable(s) to be included.
 #' Default `names(data)` indicating all variables are to be included.
 #' 
-#' @param include_pattern (optional) \link[base]{character} scalar as 
-#' \link[base]{regex} (regular expression), 
-#' the pattern of the names of the variable(s) to be included.
+#' @param include_pattern (optional) \link[base]{regex}, 
+#' pattern of the names of the variable(s) to be included.
 #' 
 #' @param paired \link[base]{logical} scalar, whether to perform paired test (default `FALSE`)
 #' 
