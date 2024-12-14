@@ -6,25 +6,25 @@
 #' 
 #' @param data a \link[base]{data.frame}
 #' 
-#' @param data.name \link[base]{character} scalar, or the argument call of `data`.  
+#' @param data.name \link[base]{character} scalar, or the argument \link[base]{call} of `data`.  
 #' A user-friendly name of the input `data`.
 #' 
 #' @param groups \link[base]{character} scalar or \link[base]{vector}, 
-#' the name(s) of sub-group(s) for which the summary statistics are to be provided.
+#' the name(s) of sub-group(s) for which the summary statistics are provided.
 #' Default `NULL` indicating no sub-groups.
 #' 
 #' @param exclude \link[base]{character} \link[base]{vector}, 
 #' the name(s) of variable(s) to be excluded.  
-#' Default `NULL` indicating no variable are to be excluded.
+#' Default `NULL` indicating no variable are excluded.
 #' 
-#' @param exclude_pattern (optional) \link[base]{regex}, 
+#' @param exclude_rx (optional) \link[base]{regex}, 
 #' pattern of the names of the variable(s) to be excluded. 
 #' 
 #' @param include \link[base]{character} \link[base]{vector}, 
 #' the name(s) of variable(s) to be included.
-#' Default `names(data)` indicating all variables are to be included.
+#' Default `names(data)` indicating all variables are included.
 #' 
-#' @param include_pattern (optional) \link[base]{regex}, 
+#' @param include_rx (optional) \link[base]{regex}, 
 #' pattern of the names of the variable(s) to be included.
 #' 
 #' @param paired \link[base]{logical} scalar, whether to perform paired test (default `FALSE`)
@@ -62,7 +62,7 @@
 #' @returns 
 #' 
 #' Function [DemographicTable] returns an object of S3 class `'DemographicTable'`, 
-#' which inherits from \link[base]{matrix}.
+#' which is a \link[base]{list} of \link[base]{matrix}-es.
 #' 
 #' @importFrom stats aov chisq.test fisher.test kruskal.test mcnemar.test pairwise.prop.test pairwise.t.test pairwise.wilcox.test prop.test quantile t.test sd wilcox.test
 #' 
@@ -79,7 +79,7 @@
 #' (tb2 = DemographicTable(CO2_nonchilled, groups = 'Type', include = c('conc', 'uptake')))
 #' c(tb1, tb2)
 #' 
-#' # with missing value
+#' # missing value in `groups`
 #' tryCatch(DemographicTable(MASS::survey, groups = 'Smoke'), warning = identity)
 #' 
 #' @name DemographicTable
@@ -93,8 +93,8 @@ DemographicTable <- function(data, ...) UseMethod('DemographicTable')
 DemographicTable.data.frame <- function(
     data, data.name = substitute(data), 
     groups = NULL,
-    exclude = NULL, exclude_pattern, 
-    include, include_pattern, 
+    exclude = NULL, exclude_rx, 
+    include, include_rx, 
     paired = FALSE,
     robust = TRUE,
     overall = TRUE, 
@@ -120,14 +120,14 @@ DemographicTable.data.frame <- function(
     if (any(id <- vapply(data[groups], FUN = is.matrix, FUN.VALUE = NA, USE.NAMES = FALSE))) stop(sQuote(groups[id]), ' is/are matrix column(s).')
   }
   
-  if (!missing(exclude_pattern)) {
-    exclude <- unique.default(c(exclude, grep(exclude_pattern, x = names(data), value = TRUE)))
+  if (!missing(exclude_rx)) {
+    exclude <- unique.default(c(exclude, grep(pattern = exclude_rx, x = names(data), value = TRUE)))
   }
   
-  include <- if (missing(include_pattern)) {
+  include <- if (missing(include_rx)) {
     if (missing(include)) names(data) else include
   } else {
-    ptn_include <- grep(include_pattern, x = names(data), value = TRUE)
+    ptn_include <- grep(pattern = include_rx, x = names(data), value = TRUE)
     if (missing(include)) ptn_include else unique.default(c(include, ptn_include))
   }
   

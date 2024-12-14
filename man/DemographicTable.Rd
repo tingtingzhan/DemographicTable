@@ -12,9 +12,9 @@ DemographicTable(data, ...)
   data.name = substitute(data),
   groups = NULL,
   exclude = NULL,
-  exclude_pattern,
+  exclude_rx,
   include,
-  include_pattern,
+  include_rx,
   paired = FALSE,
   robust = TRUE,
   overall = TRUE,
@@ -28,25 +28,25 @@ DemographicTable(data, ...)
 
 \item{...}{additional parameters, currently not in use}
 
-\item{data.name}{\link[base]{character} scalar, or the argument call of \code{data}.
+\item{data.name}{\link[base]{character} scalar, or the argument \link[base]{call} of \code{data}.
 A user-friendly name of the input \code{data}.}
 
 \item{groups}{\link[base]{character} scalar or \link[base]{vector},
-the name(s) of sub-group(s) for which the summary statistics are to be provided.
+the name(s) of sub-group(s) for which the summary statistics are provided.
 Default \code{NULL} indicating no sub-groups.}
 
 \item{exclude}{\link[base]{character} \link[base]{vector},
 the name(s) of variable(s) to be excluded.
-Default \code{NULL} indicating no variable are to be excluded.}
+Default \code{NULL} indicating no variable are excluded.}
 
-\item{exclude_pattern}{(optional) \link[base]{regex},
+\item{exclude_rx}{(optional) \link[base]{regex},
 pattern of the names of the variable(s) to be excluded.}
 
 \item{include}{\link[base]{character} \link[base]{vector},
 the name(s) of variable(s) to be included.
-Default \code{names(data)} indicating all variables are to be included.}
+Default \code{names(data)} indicating all variables are included.}
 
-\item{include_pattern}{(optional) \link[base]{regex},
+\item{include_rx}{(optional) \link[base]{regex},
 pattern of the names of the variable(s) to be included.}
 
 \item{paired}{\link[base]{logical} scalar, whether to perform paired test (default \code{FALSE})}
@@ -67,7 +67,7 @@ Default \code{3L}.}
 }
 \value{
 Function \link{DemographicTable} returns an object of S3 class \code{'DemographicTable'},
-which inherits from \link[base]{matrix}.
+which is a \link[base]{list} of \link[base]{matrix}-es.
 }
 \description{
 Create a demographic table with simple summary statistics, with optional comparison(s) over one or more groups.
@@ -98,7 +98,7 @@ CO2_nonchilled = subset(CO2, Treatment == 'nonchilled')
 (tb2 = DemographicTable(CO2_nonchilled, groups = 'Type', include = c('conc', 'uptake')))
 c(tb1, tb2)
 
-# with missing value
+# missing value in `groups`
 tryCatch(DemographicTable(MASS::survey, groups = 'Smoke'), warning = identity)
 
 }
