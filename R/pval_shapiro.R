@@ -33,6 +33,7 @@
 #' pval_shapiro(rnorm(5))
 #' sapply(with(airquality, split(Ozone, f = Month)), FUN = pval_shapiro)
 #' 
+#' @keywords internal
 #' @importFrom stats shapiro.test
 #' @export
 pval_shapiro <- function(x, CLT = FALSE, ...) {
