@@ -220,9 +220,10 @@ DemographicTable.data.frame <- function(
 #' 
 #' @param ... one or more [DemographicTable] objects
 #' 
-#' @details
+#' @returns
 #' Function [c.DemographicTable] returns a [DemographicTable] object.
 #' 
+#' @keywords internal
 #' @export c.DemographicTable
 #' @export
 c.DemographicTable <- function(...) {

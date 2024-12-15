@@ -9,9 +9,10 @@
 \arguments{
 \item{...}{one or more \link{DemographicTable} objects}
 }
+\value{
+Function \link{c.DemographicTable} returns a \link{DemographicTable} object.
+}
 \description{
 Concatenate \link{DemographicTable} Objects
 }
-\details{
-Function \link{c.DemographicTable} returns a \link{DemographicTable} object.
-}
+\keyword{internal}

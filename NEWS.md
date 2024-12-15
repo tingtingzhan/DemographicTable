@@ -1,3 +1,7 @@
+# DemographicTable 0.1.10
+'DemographicTable' object is now a 'list' of 'matrix'es.
+
+xtable.DemographicTable is defunct.
 # DemographicTable 0.1.8
 Release for R 4.4.0
 # DemographicTable 0.1.7
