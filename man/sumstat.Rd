@@ -38,7 +38,7 @@ Provide the summary statistics of an R object
 \details{
 Function \link{.sumstat.default} accepts all R objects of \link[base]{typeof} \link[base]{double} and \link[base]{integer}.
 Statistics of \link[base]{mean}, \link[stats]{sd} and \link[base]{range} are reported.
-If the normality assumption via \link[stats]{shapiro.test} is not satisified, then \link[stats]{median} and \link[stats]{mad} are also reported.
+If the normality assumption via \link[stats]{shapiro.test} is not satisfied, then \link[stats]{median} and \link[stats]{mad} are also reported.
 }
 \examples{
 x = c(rpois(n = 20L, lambda = 2), NA_integer_)
