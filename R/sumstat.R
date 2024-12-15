@@ -29,19 +29,19 @@
 #' .sumstat(c(FALSE, FALSE, FALSE))
 #' .sumstat(c(NA, NA, NA))
 #' 
-#' @name sumstat
 #' @keywords internal
+#' @name sumstat
 #' @export
 .sumstat <- function(x, fmt, ...) UseMethod('.sumstat')
 
 #' @rdname sumstat
+#' 
 #' @param fmt (optional) \link[base]{character} scalar, only for function [.sumstat.default], see function \link[base]{sprintf}
 #' 
 #' @details
 #' Function [.sumstat.default] accepts all R objects of \link[base]{typeof} \link[base]{double} and \link[base]{integer}.
 #' Statistics of \link[base]{mean}, \link[stats]{sd} and \link[base]{range} are reported.
 #' If the normality assumption via \link[stats]{shapiro.test} is not satisified, then \link[stats]{median} and \link[stats]{mad} are also reported.
-#' 
 #' 
 # @importFrom e1071 skewness
 #' @importFrom stats setNames
@@ -116,11 +116,6 @@
   return(setNames(paste(ret, collapse = '\n'), nm = nm))
   
 }
-
-
-
-
-
 
 #' @rdname sumstat
 #' @export

@@ -3,20 +3,19 @@
 #' @title Convert [DemographicTable] to \link[flextable]{flextable}
 #' 
 #' @description 
-#' Convert a [DemographicTable] to \link[flextable]{flextable} object.
+#' Convert a [DemographicTable] to a \link[flextable]{flextable} object.
 #' 
 #' @param x a [DemographicTable] object
 #' 
-#' @param ... potential additional parameters, not currently in use 
+#' @param ... additional parameters, not currently in use 
 #' 
 #' @returns 
-#' 
-#' Function [as_flextable.DemographicTable] returns a \link[flextable]{flextable} object.
+#' Function [as_flextable.DemographicTable] returns a \link[flextable]{flextable}.
 #' 
 #' @note
-#' 
-#' End user may use \link[flextable]{set_caption} to add a caption to the output demographic table.
+#' End user may use function \link[flextable]{set_caption} to add a caption to the output demographic table.
 #'
+#' @keywords internal
 #' @importFrom flextable as_flextable flextable autofit hline vline merge_v merge_h
 #' @importFrom officer fp_border
 #' @export as_flextable.DemographicTable
@@ -58,7 +57,8 @@ as_flextable.DemographicTable <- function(x, ...) {
     add_header_row(values = c(' ', dnm), colwidths = c(1, nc), top = TRUE) |>
     merge_h(part = 'header') |>
     merge_v(part = 'header') |>
-    align(i = NULL, j = NULL, align = 'center', part = 'header') 
+    #align(i = NULL, j = NULL, align = 'center', part = 'header') 
+    align(align = 'center', part = 'header') 
   
 }
 

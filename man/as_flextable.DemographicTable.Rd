@@ -9,14 +9,15 @@
 \arguments{
 \item{x}{a \link{DemographicTable} object}
 
-\item{...}{potential additional parameters, not currently in use}
+\item{...}{additional parameters, not currently in use}
 }
 \value{
-Function \link{as_flextable.DemographicTable} returns a \link[flextable]{flextable} object.
+Function \link{as_flextable.DemographicTable} returns a \link[flextable]{flextable}.
 }
 \description{
-Convert a \link{DemographicTable} to \link[flextable]{flextable} object.
+Convert a \link{DemographicTable} to a \link[flextable]{flextable} object.
 }
 \note{
-End user may use \link[flextable]{set_caption} to add a caption to the output demographic table.
+End user may use function \link[flextable]{set_caption} to add a caption to the output demographic table.
 }
+\keyword{internal}

@@ -21,3 +21,4 @@ Function \link{rmd_.DemographicTable} returns a \link[base]{character} \link[bas
 \description{
 Method dispatch to \link{DemographicTable} for S3 generic \code{rmd_} (in a secret master package).
 }
+\keyword{internal}
