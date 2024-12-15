@@ -4,14 +4,15 @@ Title: Creating Demographic Table
 Version: 0.1.10
 Date: 2024-12-15
 Description: Functions for creating demographic table of simple
-       summary statistics and comparison(s) over one or more groups.
-       Returned value is printed via package flextable.
+       summary statistics and comparison(s) over one or more
+       groups. Returned value is printed via package flextable.
 License: GPL-2
 Encoding: UTF-8
 Imports: flextable, officer
 Authors@R: c(person(given = "Tingting", family = "Zhan", role =
-       c("aut", "cre", "cph"), email = c("tingtingzhan@gmail.com"),
-       comment = c(ORCID = '0000-0001-9971-4844')))
+       c("aut", "cre", "cph"), email =
+       c("tingtingzhan@gmail.com"), comment = c(ORCID =
+       '0000-0001-9971-4844')))
 Language: en-US
 Roxygen: list(markdown = TRUE)
 Depends: R (>= 4.4.0)

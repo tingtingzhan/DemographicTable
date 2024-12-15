@@ -1,9 +1,9 @@
 
-library(adv.tzh) # devtools::install_github('tingtingzhan/adv.tzh')
-
+#library(adv.tzh) # devtools::install_github('tingtingzhan/adv.tzh')
+devtools::load_all('../adv.tzh')
 
 removeLocalPackage('DemographicTable')
 updateDESCRIPTION('.')
-checkDocument('.')
-checkRelease('.')
+document_('.')
+release_('.')
 
