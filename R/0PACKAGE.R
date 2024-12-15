@@ -10,6 +10,8 @@
 #' Wilcoxon test, ANOVA and/or Kruskal-Wallis test.
 #' Logical and factor variables are summarized in counts and percentages and
 #' compared using chi-squared test and/or Fisher's exact test.
+#' 
+#' Returned value is printed via package \CRANpkg{flextable}.
 #'
 '_PACKAGE'
 
