@@ -40,24 +40,23 @@ as_flextable.DemographicTable <- function(x, ...) {
   v_hard <- c(1L, 1L + cumsum(nc[-length(nc)]))
   v_soft <- setdiff(seq_len(sum(nc)), v_hard)
     
-  ret0 <- x1 |> flextable() |> 
+  ret0 <- x1 |> 
+    flextable() |> 
     autofit(part = 'all') |>
     hline(i = seq_len(dim(x0)[1L] - 1L)) |>
-    vline(j = v_hard) |>
+    vline(j = v_hard, border = fp_border(width = 1.5)) |>
     vline(j = v_soft, border = fp_border(width = .5))
 
   ret1 <- if (any(nz_grp <- nzchar(group))) {
     group[!nz_grp] <- vapply(x[!nz_grp], FUN = colnames, FUN.VALUE = '')
     ret0 |> 
-      add_header_row(values = c(' ', group), colwidths = c(1, nc), top = TRUE) |>
-      merge_v(part = 'header') 
+      add_header_row(values = c(' ', group), colwidths = c(1, nc), top = TRUE)
   } else ret0
 
   ret1 |> 
     add_header_row(values = c(' ', dnm), colwidths = c(1, nc), top = TRUE) |>
     merge_h(part = 'header') |>
     merge_v(part = 'header') |>
-    #align(i = NULL, j = NULL, align = 'center', part = 'header') 
     align(align = 'center', part = 'header') 
   
 }
