@@ -61,7 +61,7 @@
   
   ret <- character()
   
-  ret <- c(ret, if (n < length(x0)) paste0('N*=', n) else '') # align with 'varname:' in DemographicTable
+  ret <- c(ret, if (n < length(x0)) paste0('n*=', n) else '') # align with 'varname:' in DemographicTable
   
   mean_ <- mean.default(x)
   sd_ <- sd(x)
@@ -110,7 +110,7 @@
   if (!any(xok <- !is.na(x))) return(setNames('', nm = nm))
   
   ret <- character()
-  ret <- c(ret, if (!all(xok)) paste0('N*=', sum(xok)) else '')
+  ret <- c(ret, if (!all(xok)) paste0('n*=', sum(xok)) else '')
   ret <- c(ret, ifelse(ct == 0L, yes = '-', no = sprintf(fmt = '%d (%.1f%%)', ct, 1e2*ct/sum(ct))))
   # decimal point of percentage is hard-coded
   return(setNames(paste(ret, collapse = '\n'), nm = nm))
@@ -135,7 +135,7 @@
   if (!any(xok)) return('')
   ct1 <- sum(x[xok])
   ret <- character()
-  ret <- c(ret, if (!all(xok)) paste0('N*=', sum(xok)) else NULL) # not `else ''`
+  ret <- c(ret, if (!all(xok)) paste0('n*=', sum(xok)) else NULL) # not `else ''`
   ret <- c(ret, if (ct1 == 0L) '-' else sprintf(fmt = '%d (%.1f%%)', ct1, 1e2*ct1/sum(xok)))
   # decimal point of percentage is hard-coded
   paste(ret, collapse = '\n')

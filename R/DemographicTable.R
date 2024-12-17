@@ -80,7 +80,7 @@
 #' c(tb1, tb2)
 #' 
 #' # missing value in `groups`
-#' tryCatch(DemographicTable(MASS::survey, groups = 'Smoke'), warning = identity)
+#' DemographicTable(MASS::survey, groups = c('Smoke', 'M.I'))
 #' 
 #' @name DemographicTable
 #' @export
@@ -156,18 +156,23 @@ DemographicTable.data.frame <- function(
   
   if (length(groups)) {
     
-    for (ig in groups) {
-      if (any(id <- is.na(data[[ig]]))) {
-        warning('Group-variable ', sQuote(ig), ' has ', sum(id), ' missing values')
-      }# else do nothing
-    }
+    names(groups) <- groups
     
-    for (ig in groups) {
-      igv <- data[[ig]]
-      if (length(unique(igv[!is.na(igv)])) == 1L) {
-        message('Column ', sQuote(ig), ' has single value, thus removed from `groups`.')
-        groups <- setdiff(groups, ig)
+    for (i in seq_along(groups)) {
+      
+      grp <- groups[i]
+      grpv <- data[[grp]]
+      
+      if (any(id <- is.na(grpv))) {
+        names(groups)[i] <- sprintf(fmt = '%s\nn=%d (%.1f%%) missing', names(groups)[i], sum(id), 1e2*mean.default(id))
+        #warning('Group-variable ', sQuote(grp), ' has ', sum(id), ' missing values')
+      }# else do nothing
+      
+      if (length(unique(grpv[!id])) == 1L) {
+        message('Column ', sQuote(grp), ' has single value, thus removed from `groups`.')
+        groups <- setdiff(groups, grp)
       }
+      
     } # remove any group with all-same entries
     
   }
@@ -201,7 +206,13 @@ DemographicTable.data.frame <- function(
   overall <- overall & !paired
   
   ret0 <- if (overall) list(.sumtab(data, data.name = data.name, vlst = vlst, ...)) # else NULL      
-  ret1 <- if (length(groups)) lapply(groups, FUN = .sumtab_by, data = data, data.name = data.name, vlst = vlst, compare = compare, paired = paired, robust = robust, pairwise = pairwise, ...)
+  ret1 <- if (length(groups)) {
+    # in this way, `names(groups)` won't be passed into [.sumtab_by]
+    # lapply(groups, FUN = .sumtab_by, data = data, data.name = data.name, vlst = vlst, compare = compare, paired = paired, robust = robust, pairwise = pairwise, ...)
+    lapply(seq_along(groups), FUN = function(i) {
+      .sumtab_by(data = data, data.name = data.name, group = groups[i], vlst = vlst, compare = compare, paired = paired, robust = robust, pairwise = pairwise, ...)
+    })
+  }
   ret <- c(ret0, ret1)
   if (!length(ret)) stop('wont happen')
   
@@ -215,22 +226,6 @@ DemographicTable.data.frame <- function(
 
 
 
-
-#' @title Concatenate [DemographicTable] Objects
-#' 
-#' @param ... one or more [DemographicTable] objects
-#' 
-#' @returns
-#' Function [c.DemographicTable] returns a [DemographicTable] object.
-#' 
-#' @keywords internal
-#' @export c.DemographicTable
-#' @export
-c.DemographicTable <- function(...) {
-  ret <- do.call(c, args = lapply(list(...), FUN = unclass))
-  class(ret) <- c('DemographicTable', class(ret))
-  return(ret)
-}
 
 
 
@@ -268,10 +263,11 @@ c.DemographicTable <- function(...) {
   ret0 <- c(out_num, out_difft, out_bool, out_factor)
   ret <- array(ret0, dim = c(length(ret0), 1L), dimnames = list(
     names(ret0), 
-    paste0('N=', .row_names_info(data, type = 2L))
+    paste0('n=', .row_names_info(data, type = 2L))
   ))
   attr(ret, which = 'data.name') <- data.name
   attr(ret, which = 'group') <- '' # important
+  attr(ret, which = 'group.name') <- ''
   class(ret) <- c('sumtab', class(ret))
   return(ret)
 }
@@ -284,18 +280,15 @@ c.DemographicTable <- function(...) {
   if (!is.character(group) || length(group) != 1L || anyNA(group) || !nzchar(group)) stop('`group` must be len-1 character')
   
   fgrp <- factor(data[[group]])
-  gidx <- split.default(seq_along(fgrp), f = fgrp)
+  gidx <- split.default(seq_along(fgrp), f = fgrp) # missingness in `fgrp` dropped
   gN <- lengths(gidx, use.names = FALSE)
   
   ret <- do.call(cbind, args = lapply(gidx, FUN = function(id) { # (id = gidx[[1L]])
     .sumtab(data[id, , drop = FALSE], data.name = '', vlst = vlst, ...)
   }))
   colnames(ret) <- if (!paired) {
-    sprintf(fmt = '%s\nN=%d (%.1f%%)', names(gidx), gN, 1e2*gN/sum(gN))
-  } else sprintf(fmt = '%s\nN=%d', names(gidx), gN)
-  #colnames(ret) <- if (!paired) {
-  #  sprintf(fmt = '%s\n= %s\nN=%d (%.1f%%)', group, names(gidx), gN, 1e2*gN/sum(gN))
-  #} else sprintf(fmt = '%s\n= %s\nN=%d', group, names(gidx), gN)
+    sprintf(fmt = '%s\nn=%d (%.1f%%)', names(gidx), gN, 1e2*gN/length(fgrp)) # before removing NA!!!
+  } else sprintf(fmt = '%s\nn=%d', names(gidx), gN)
   
   # removing single 'group' for p-values
   txt_g1 <- if (any(g1 <- (gN == 1L))) {
@@ -319,6 +312,7 @@ c.DemographicTable <- function(...) {
   
   ret <- cbind(ret, ret_compare)
   attr(ret, which = 'group') <- group
+  attr(ret, which = 'group.name') <- names(group)
   attr(ret, which = 'data.name') <- data.name
   class(ret) <- c('sumtab', class(ret))
   return(ret)

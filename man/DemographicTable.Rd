@@ -99,6 +99,6 @@ CO2_nonchilled = subset(CO2, Treatment == 'nonchilled')
 c(tb1, tb2)
 
 # missing value in `groups`
-tryCatch(DemographicTable(MASS::survey, groups = 'Smoke'), warning = identity)
+DemographicTable(MASS::survey, groups = c('Smoke', 'M.I'))
 
 }

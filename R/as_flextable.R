@@ -26,7 +26,7 @@ as_flextable.DemographicTable <- function(x, ...) {
   if (!all(duplicated(rnm)[-1L])) stop('rownames not all-same')
   
   x0 <- do.call(cbind, args = x)
-  group <- vapply(x, FUN = attr, which = 'group', exact = TRUE, FUN.VALUE = '')
+  group <- vapply(x, FUN = attr, which = 'group.name', exact = TRUE, FUN.VALUE = '')
   nc <- vapply(x, FUN = ncol, FUN.VALUE = NA_integer_)
   dnm <- vapply(x, FUN = attr, which = 'data.name', exact = TRUE, FUN.VALUE = '')
   
@@ -79,7 +79,7 @@ as_flextable.sumtab <- function(x, ...) {
     hline(i = seq_len(dim(x)[1L] - 1L)) |>
     vline(j = 1L)
   
-  group <- attr(x, which = 'group', exact = TRUE)
+  group <- attr(x, which = 'group.name', exact = TRUE)
   #if (!length(group)) return(ret0)
   if (!nzchar(group)) return(ret0)
    
