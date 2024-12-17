@@ -16,7 +16,7 @@
 #' End user may use function \link[flextable]{set_caption} to add a caption to the output demographic table.
 #'
 #' @keywords internal
-#' @importFrom flextable as_flextable flextable autofit color hline vline merge_v merge_h
+#' @importFrom flextable as_flextable flextable autofit color hline vline add_header_row add_footer_row merge_v merge_h
 #' @importFrom officer fp_border
 #' @importFrom scales pal_hue
 #' @export as_flextable.DemographicTable
@@ -63,17 +63,20 @@ as_flextable.DemographicTable <- function(x, ...) {
   ret1 <- if (any(nz_grp <- nzchar(group))) {
     group[!nz_grp] <- vapply(x[!nz_grp], FUN = colnames, FUN.VALUE = '')
     ret0 |> 
-      add_header_row(values = c(' ', group), colwidths = c(1, nc), top = TRUE)
+      add_header_row(values = c(' ', group), colwidths = c(1, nc), top = TRUE) |>
+      add_footer_row(values = c(' ', group), colwidths = c(1, nc), top = FALSE)
   } else ret0
 
   ret1 |> 
     add_header_row(values = c(' ', dnm), colwidths = c(1, nc), top = TRUE) |>
+    add_footer_row(values = c(' ', dnm), colwidths = c(1, nc), top = FALSE) |>
     merge_h(part = 'header') |>
     merge_v(part = 'header') |>
+    merge_h(part = 'footer') |>
+    merge_v(part = 'footer') |>
     color(i = 1:2, color = 'black', part = 'header') |> # having `v_hue` or not
-    align(align = 'center', part = 'header') 
-  
-  
+    align(align = 'center', part = 'header') |>
+    align(align = 'center', part = 'footer')
   
 }
 

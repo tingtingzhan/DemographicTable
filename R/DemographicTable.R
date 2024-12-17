@@ -87,14 +87,7 @@
 #' 
 # @name DemographicTable
 #' @export
-DemographicTable <- #function(data, ...) UseMethod('DemographicTable')
-
-# @rdname DemographicTable
-# @method DemographicTable data.frame
-# @export DemographicTable.data.frame
-# @export
-#DemographicTable.data.frame <- 
-  function(
+DemographicTable <- function(
     data, data.name = substitute(data), 
     groups = NULL,
     exclude = NULL, exclude_rx, 
