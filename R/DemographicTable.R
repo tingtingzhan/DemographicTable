@@ -299,8 +299,9 @@ c.DemographicTable <- function(...) {
   
   # removing single 'group' for p-values
   txt_g1 <- if (any(g1 <- (gN == 1L))) {
-    gidx <- gidx[-g1]
-    paste0('(', sum(g1), ' ', sQuote(group), ' level(s) of\n single obs omitted)')
+    gidx <- gidx[!g1]
+    #paste0('(', sum(g1), ' ', sQuote(group), ' level(s) of\n single obs omitted)')
+    paste0('(', sum(g1), ' level(s) of\n single obs omitted)')
   } # else NULL
   
   ng <- length(gidx)

@@ -34,6 +34,5 @@ Function \link{pval_shapiro} provides a pseudo \eqn{p}-value for several excepti
 \examples{
 pval_shapiro(rnorm(5))
 sapply(with(airquality, split(Ozone, f = Month)), FUN = pval_shapiro)
-
 }
 \keyword{internal}
