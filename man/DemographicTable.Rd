@@ -2,12 +2,9 @@
 % Please edit documentation in R/DemographicTable.R
 \name{DemographicTable}
 \alias{DemographicTable}
-\alias{DemographicTable.data.frame}
 \title{Create Demographic Table}
 \usage{
-DemographicTable(data, ...)
-
-\method{DemographicTable}{data.frame}(
+DemographicTable(
   data,
   data.name = substitute(data),
   groups = NULL,
@@ -25,8 +22,6 @@ DemographicTable(data, ...)
 }
 \arguments{
 \item{data}{a \link[base]{data.frame}}
-
-\item{...}{additional parameters, currently not in use}
 
 \item{data.name}{\link[base]{character} scalar, or the argument \link[base]{call} of \code{data}.
 A user-friendly name of the input \code{data}.}
@@ -64,6 +59,8 @@ If \code{TRUE} (default), comparisons between group(s) will be made.}
 \item{pairwise}{\link[base]{integer} scalar,
 minimum number of groups where pairwise comparisons need to be performed.
 Default \code{3L}.}
+
+\item{...}{additional parameters, currently not in use}
 }
 \value{
 Function \link{DemographicTable} returns an object of S3 class \code{'DemographicTable'},
@@ -98,7 +95,10 @@ CO2_nonchilled = subset(CO2, Treatment == 'nonchilled')
 (tb2 = DemographicTable(CO2_nonchilled, groups = 'Type', include = c('conc', 'uptake')))
 c(tb1, tb2)
 
+# pairwise comparision
+DemographicTable(MASS::survey, groups = 'Fold')
+
 # missing value in `groups`
-DemographicTable(MASS::survey, groups = c('Smoke', 'M.I'))
+DemographicTable(MASS::survey, groups = c('M.I'))
 
 }

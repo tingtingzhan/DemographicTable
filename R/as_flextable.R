@@ -16,8 +16,9 @@
 #' End user may use function \link[flextable]{set_caption} to add a caption to the output demographic table.
 #'
 #' @keywords internal
-#' @importFrom flextable as_flextable flextable autofit hline vline merge_v merge_h
+#' @importFrom flextable as_flextable flextable autofit color hline vline merge_v merge_h
 #' @importFrom officer fp_border
+#' @importFrom scales pal_hue
 #' @export as_flextable.DemographicTable
 #' @export
 as_flextable.DemographicTable <- function(x, ...) {
@@ -27,6 +28,7 @@ as_flextable.DemographicTable <- function(x, ...) {
   
   x0 <- do.call(cbind, args = x)
   group <- vapply(x, FUN = attr, which = 'group.name', exact = TRUE, FUN.VALUE = '')
+  compare <- vapply(x, FUN = attr, which = 'compare', exact = TRUE, FUN.VALUE = NA)
   nc <- vapply(x, FUN = ncol, FUN.VALUE = NA_integer_)
   dnm <- vapply(x, FUN = attr, which = 'data.name', exact = TRUE, FUN.VALUE = '')
   
@@ -39,6 +41,13 @@ as_flextable.DemographicTable <- function(x, ...) {
   
   v_hard <- c(1L, 1L + cumsum(nc[-length(nc)]))
   v_soft <- setdiff(seq_len(sum(nc)), v_hard)
+  v_hue_ <- lapply(seq_along(nc), FUN = function(i) {
+    j <- nc[i]
+    if (j == 1L) return(integer())
+    prev <- if (i == 1L) 0L else sum(nc[seq_len(i-1L)])
+    prev + seq_len(j - if (compare[i]) 1L else 0L) + 1L # first column being variable names
+  })
+  v_hue <- v_hue_[lengths(v_hue_) > 0L]
     
   ret0 <- x1 |> 
     flextable() |> 
@@ -46,6 +55,10 @@ as_flextable.DemographicTable <- function(x, ...) {
     hline(i = seq_len(dim(x0)[1L] - 1L)) |>
     vline(j = v_hard, border = fp_border(width = 1.5)) |>
     vline(j = v_soft, border = fp_border(width = .5))
+
+  for (i in seq_along(v_hue)) { # len-0 compatible
+    ret0 <- color(ret0, j = v_hue[[i]], color = pal_hue()(n = length(v_hue[[i]])), part = 'all')
+  }
 
   ret1 <- if (any(nz_grp <- nzchar(group))) {
     group[!nz_grp] <- vapply(x[!nz_grp], FUN = colnames, FUN.VALUE = '')
@@ -57,7 +70,10 @@ as_flextable.DemographicTable <- function(x, ...) {
     add_header_row(values = c(' ', dnm), colwidths = c(1, nc), top = TRUE) |>
     merge_h(part = 'header') |>
     merge_v(part = 'header') |>
+    color(i = 1:2, color = 'black', part = 'header') |> # having `v_hue` or not
     align(align = 'center', part = 'header') 
+  
+  
   
 }
 

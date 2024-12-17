@@ -79,18 +79,22 @@
 #' (tb2 = DemographicTable(CO2_nonchilled, groups = 'Type', include = c('conc', 'uptake')))
 #' c(tb1, tb2)
 #' 
-#' # missing value in `groups`
-#' DemographicTable(MASS::survey, groups = c('Smoke', 'M.I'))
+#' # pairwise comparision
+#' DemographicTable(MASS::survey, groups = 'Fold')
 #' 
-#' @name DemographicTable
+#' # missing value in `groups`
+#' DemographicTable(MASS::survey, groups = c('M.I'))
+#' 
+# @name DemographicTable
 #' @export
-DemographicTable <- function(data, ...) UseMethod('DemographicTable')
+DemographicTable <- #function(data, ...) UseMethod('DemographicTable')
 
-#' @rdname DemographicTable
-#' @method DemographicTable data.frame
-#' @export DemographicTable.data.frame
-#' @export
-DemographicTable.data.frame <- function(
+# @rdname DemographicTable
+# @method DemographicTable data.frame
+# @export DemographicTable.data.frame
+# @export
+#DemographicTable.data.frame <- 
+  function(
     data, data.name = substitute(data), 
     groups = NULL,
     exclude = NULL, exclude_rx, 
@@ -268,6 +272,7 @@ DemographicTable.data.frame <- function(
   attr(ret, which = 'data.name') <- data.name
   attr(ret, which = 'group') <- '' # important
   attr(ret, which = 'group.name') <- ''
+  attr(ret, which = 'compare') <- FALSE
   class(ret) <- c('sumtab', class(ret))
   return(ret)
 }
@@ -314,6 +319,7 @@ DemographicTable.data.frame <- function(
   attr(ret, which = 'group') <- group
   attr(ret, which = 'group.name') <- names(group)
   attr(ret, which = 'data.name') <- data.name
+  attr(ret, which = 'compare') <- compare
   class(ret) <- c('sumtab', class(ret))
   return(ret)
 
@@ -352,10 +358,12 @@ symb <- function(p) { # vectorized
 
 pText_pairwise.htest <- function(x) {
   dnm <- dimnames(pv0 <- x$p.value)
+  dnm1 <- paste0('\u2e22', dnm[[1L]], '\u2e25')
+  dnm2 <- paste0('\u2e22', dnm[[2L]], '\u2e25')
   id <- lower.tri(pv0, diag = TRUE)
   pv <- pv0[id]
-  pnm <- outer(dnm[[1L]], dnm[[2L]], FUN = paste, sep = ' vs. ')[id]
-  sprintf(fmt = paste0(symb(pv), '%.3f (%s)'), pv, pnm)
+  pnm <- outer(dnm1, dnm2, FUN = paste, sep = ' vs. ')[id]
+  sprintf(fmt = paste0(symb(pv), '%.3f; %s'), pv, pnm)
 }
 
 
