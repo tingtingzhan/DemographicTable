@@ -193,7 +193,7 @@ DemographicTable <- function(
     if (any(id_bool <- (mtype == 'logical'))) {
       vlst$logical <- c(vlst$logical, vlst$matrix[id_bool])
     }
-    if (any(!id_bool & !id_double)) stop('uncovered matrix column')
+    #if (any(!id_bool & !id_double)) stop('uncovered matrix column') # allow, just ignore these cases
   }
   
   ######################
