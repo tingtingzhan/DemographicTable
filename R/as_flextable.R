@@ -16,7 +16,7 @@
 #' End user may use function \link[flextable]{set_caption} to add a caption to the output demographic table.
 #'
 #' @keywords internal
-#' @importFrom flextable as_flextable flextable autofit bold color hline vline add_header_row add_footer_row merge_v merge_h
+#' @importFrom flextable as_flextable flextable autofit bold color hline hline_bottom vline add_header_row add_footer_row merge_v merge_h
 #' @importFrom officer fp_border
 #' @importFrom scales pal_hue
 #' @export as_flextable.DemographicTable
@@ -58,18 +58,26 @@ as_flextable.DemographicTable <- function(x, ...) {
   hue_color <- unlist(lapply(lengths(v2_hue), FUN = pal_hue()), use.names = FALSE) # !length(v_hue) compatible
   v_hue <- if (length(v2_hue)) unlist(v2_hue) else numeric() # must; otherwise ?flextable::color error!!
    
+  nr <- dim(x0)[1L]
+  
   x1 |> 
     flextable() |> 
     autofit(part = 'all') |>
-    hline(i = seq_len(dim(x0)[1L] - 1L)) |>
-    vline(j = v_hard, border = fp_border(width = 1.5)) |>
-    vline(j = v_soft, border = fp_border(width = .5)) |>
+    hline(i = seq_len(nr - 1L)) |> # `-1`: do not overwrite default bottom
     color(j = v_hue, color = hue_color, part = 'all') |>
     bold(j = v_hue, part = 'all') |>
+    
     add_header_row(values = c(' ', group), colwidths = c(1, nc), top = TRUE) |>
-    add_footer_row(values = c(' ', group), colwidths = c(1, nc), top = FALSE) |>
     add_header_row(values = c(' ', dnm), colwidths = c(1, nc), top = TRUE) |>
+    add_footer_row(values = c(' ', group), colwidths = c(1, nc), top = FALSE) |>
+    hline_bottom(border = fp_border(width = 1.5), part = 'all') |> # to make sure each row of footer has a bottom
     add_footer_row(values = c(' ', dnm), colwidths = c(1, nc), top = FALSE) |>
+    hline_bottom(border = fp_border(width = 1.5), part = 'all') |>
+    
+    # [vline]: must be after adding all 'footer' !
+    vline(j = v_hard, border = fp_border(width = 1.5), part = 'all') |>
+    vline(j = v_soft, border = fp_border(width = .5), part = 'all') |>
+  
     merge_h(part = 'header') |>
     merge_v(part = 'header') |>
     merge_h(part = 'footer') |>
@@ -77,7 +85,7 @@ as_flextable.DemographicTable <- function(x, ...) {
     color(i = 1:2, color = 'black', part = 'header') |> # having `v_hue` or not
     align(align = 'center', part = 'header') |>
     align(align = 'center', part = 'footer')
-  
+    
 }
 
 

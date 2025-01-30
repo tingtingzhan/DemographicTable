@@ -72,7 +72,7 @@
 #' DemographicTable(tgr, groups = 'supp', include = c('len', 'dose'))
 #' DemographicTable(tgr, groups = 'supp', include = 'len', paired = TRUE)
 #' DemographicTable(tgr, groups = 'supp', include = 'len', compare = FALSE)
-#' DemographicTable(tgr, groups = c('supp', 'dose'), include = 'len')
+#' DemographicTable(tgr, groups = c('supp', 'dose'), include = c('len', 'supp'))
 #' 
 #' (tb1 = DemographicTable(CO2, groups = 'Type', include = c('conc', 'uptake')))
 #' CO2_nonchilled = subset(CO2, Treatment == 'nonchilled')
