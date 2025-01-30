@@ -96,7 +96,7 @@ CO2_nonchilled = subset(CO2, Treatment == 'nonchilled')
 c(tb1, tb2)
 
 # pairwise comparision
-DemographicTable(MASS::survey, groups = 'Fold')
+DemographicTable(warpbreaks, groups = 'tension')
 
 # missing value in `groups`
 DemographicTable(MASS::survey, groups = c('M.I'))

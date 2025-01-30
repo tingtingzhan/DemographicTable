@@ -80,12 +80,11 @@
 #' c(tb1, tb2)
 #' 
 #' # pairwise comparision
-#' DemographicTable(MASS::survey, groups = 'Fold')
+#' DemographicTable(warpbreaks, groups = 'tension')
 #' 
 #' # missing value in `groups`
 #' DemographicTable(MASS::survey, groups = c('M.I'))
 #' 
-# @name DemographicTable
 #' @export
 DemographicTable <- function(
     data, data.name = substitute(data), 
@@ -128,7 +127,6 @@ DemographicTable <- function(
     if (missing(include)) ptn_include else unique.default(c(include, ptn_include))
   }
   
-  #include <- setdiff(x = include, y = c(exclude, groups)) # made sure `include` and `groups` has no overlap
   include <- setdiff(x = include, y = exclude)
   if (!length(include)) stop('length-0 `include`: Nothing on the rows of demographic table')
   
@@ -162,8 +160,7 @@ DemographicTable <- function(
       
       if (any(id <- is.na(grpv))) {
         names(groups)[i] <- sprintf(fmt = '%s\nn=%d (%.1f%%) missing', names(groups)[i], sum(id), 1e2*mean.default(id))
-        #warning('Group-variable ', sQuote(grp), ' has ', sum(id), ' missing values')
-      }# else do nothing
+      } # else do nothing
       
       if (length(unique(grpv[!id])) == 1L) {
         message('Column ', sQuote(grp), ' has single value, thus removed from `groups`.')

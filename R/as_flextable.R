@@ -28,7 +28,9 @@ as_flextable.DemographicTable <- function(x, ...) {
   
   x0 <- do.call(cbind, args = x)
   
-  group <- vapply(x, FUN = attr, which = 'group', exact = TRUE, FUN.VALUE = '')
+  group. <- unlist(lapply(x, FUN = attr, which = 'group', exact = TRUE), use.names = TRUE) # *not* ?base::vapply (which does not retain names)
+  group <- names(group.) # `names('')` returns NULL
+  if (!length(group)) group <- ''
   if (any(z_grp <- !nzchar(group))) {
     group[z_grp] <- vapply(x[z_grp], FUN = colnames, FUN.VALUE = '')
   }
