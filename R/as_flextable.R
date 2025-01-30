@@ -16,7 +16,7 @@
 #' End user may use function \link[flextable]{set_caption} to add a caption to the output demographic table.
 #'
 #' @keywords internal
-#' @importFrom flextable as_flextable flextable autofit color hline vline add_header_row add_footer_row merge_v merge_h
+#' @importFrom flextable as_flextable flextable autofit bold color hline vline add_header_row add_footer_row merge_v merge_h
 #' @importFrom officer fp_border
 #' @importFrom scales pal_hue
 #' @export as_flextable.DemographicTable
@@ -27,7 +27,12 @@ as_flextable.DemographicTable <- function(x, ...) {
   if (!all(duplicated(rnm)[-1L])) stop('rownames not all-same')
   
   x0 <- do.call(cbind, args = x)
-  group <- vapply(x, FUN = attr, which = 'group.name', exact = TRUE, FUN.VALUE = '')
+  
+  group <- vapply(x, FUN = attr, which = 'group', exact = TRUE, FUN.VALUE = '')
+  if (any(z_grp <- !nzchar(group))) {
+    group[z_grp] <- vapply(x[z_grp], FUN = colnames, FUN.VALUE = '')
+  }
+  
   compare <- vapply(x, FUN = attr, which = 'compare', exact = TRUE, FUN.VALUE = NA)
   nc <- vapply(x, FUN = ncol, FUN.VALUE = NA_integer_)
   dnm <- vapply(x, FUN = attr, which = 'data.name', exact = TRUE, FUN.VALUE = '')
@@ -41,33 +46,26 @@ as_flextable.DemographicTable <- function(x, ...) {
   
   v_hard <- c(1L, 1L + cumsum(nc[-length(nc)]))
   v_soft <- setdiff(seq_len(sum(nc)), v_hard)
-  v_hue_ <- lapply(seq_along(nc), FUN = function(i) {
+  v1_hue <- lapply(seq_along(nc), FUN = function(i) {
     j <- nc[i]
     if (j == 1L) return(integer())
     prev <- if (i == 1L) 0L else sum(nc[seq_len(i-1L)])
     prev + seq_len(j - if (compare[i]) 1L else 0L) + 1L # first column being variable names
   })
-  v_hue <- v_hue_[lengths(v_hue_) > 0L]
-    
-  ret0 <- x1 |> 
+  v2_hue <- v1_hue[lengths(v1_hue) > 0L] # columns to have color
+  hue_color <- unlist(lapply(lengths(v2_hue), FUN = pal_hue()), use.names = FALSE) # !length(v_hue) compatible
+  v_hue <- if (length(v2_hue)) unlist(v2_hue) else numeric() # must; otherwise ?flextable::color error!!
+   
+  x1 |> 
     flextable() |> 
     autofit(part = 'all') |>
     hline(i = seq_len(dim(x0)[1L] - 1L)) |>
     vline(j = v_hard, border = fp_border(width = 1.5)) |>
-    vline(j = v_soft, border = fp_border(width = .5))
-
-  for (i in seq_along(v_hue)) { # len-0 compatible
-    ret0 <- color(ret0, j = v_hue[[i]], color = pal_hue()(n = length(v_hue[[i]])), part = 'all')
-  }
-
-  ret1 <- if (any(nz_grp <- nzchar(group))) {
-    group[!nz_grp] <- vapply(x[!nz_grp], FUN = colnames, FUN.VALUE = '')
-    ret0 |> 
-      add_header_row(values = c(' ', group), colwidths = c(1, nc), top = TRUE) |>
-      add_footer_row(values = c(' ', group), colwidths = c(1, nc), top = FALSE)
-  } else ret0
-
-  ret1 |> 
+    vline(j = v_soft, border = fp_border(width = .5)) |>
+    color(j = v_hue, color = hue_color, part = 'all') |>
+    bold(j = v_hue, part = 'all') |>
+    add_header_row(values = c(' ', group), colwidths = c(1, nc), top = TRUE) |>
+    add_footer_row(values = c(' ', group), colwidths = c(1, nc), top = FALSE) |>
     add_header_row(values = c(' ', dnm), colwidths = c(1, nc), top = TRUE) |>
     add_footer_row(values = c(' ', dnm), colwidths = c(1, nc), top = FALSE) |>
     merge_h(part = 'header') |>
@@ -92,13 +90,13 @@ as_flextable.sumtab <- function(x, ...) {
   dnm <- attr(x, which = 'data.name', exact = TRUE)
   names(x1)[1L] <- dnm
   
-  ret0 <- flextable(data = x1) |> 
+  ret0 <- x1 |>
+    flextable() |> 
     autofit(part = 'all') |>
     hline(i = seq_len(dim(x)[1L] - 1L)) |>
     vline(j = 1L)
   
-  group <- attr(x, which = 'group.name', exact = TRUE)
-  #if (!length(group)) return(ret0)
+  group <- attr(x, which = 'group', exact = TRUE)
   if (!nzchar(group)) return(ret0)
    
   ret0 |> 

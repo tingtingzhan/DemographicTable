@@ -264,7 +264,6 @@ DemographicTable <- function(
   ))
   attr(ret, which = 'data.name') <- data.name
   attr(ret, which = 'group') <- '' # important
-  attr(ret, which = 'group.name') <- ''
   attr(ret, which = 'compare') <- FALSE
   class(ret) <- c('sumtab', class(ret))
   return(ret)
@@ -310,7 +309,6 @@ DemographicTable <- function(
   
   ret <- cbind(ret, ret_compare)
   attr(ret, which = 'group') <- group
-  attr(ret, which = 'group.name') <- names(group)
   attr(ret, which = 'data.name') <- data.name
   attr(ret, which = 'compare') <- compare
   class(ret) <- c('sumtab', class(ret))
