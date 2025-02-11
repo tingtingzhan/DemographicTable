@@ -74,7 +74,7 @@
   
   prt_median <- if (n == 1L) FALSE else {
     p_shapiro <- tryCatch(shapiro.test(x)$p.value, error = identity)
-    !inherits(p_shapiro, what = 'error') & p_shapiro < .05
+    !inherits(p_shapiro, what = 'error') && p_shapiro < .05
   }
   ret <- c(ret, if (prt_median) {
     if (abs(iqr) < .Machine$double.eps) {
