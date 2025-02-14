@@ -60,6 +60,11 @@ as_flextable.DemographicTable <- function(x, ...) {
    
   nr <- dim(x0)[1L]
   
+  border_hard_ <- fp_border(width = 1.5, color = 'gray40')
+  # *looks* like default border used in ?flextable::flextable
+  # tzh does *not* know how to find out for sure, for now
+  border_soft_ <- fp_border(width = .5, color = 'gray40')
+  
   x1 |> 
     flextable() |> 
     autofit(part = 'all') |>
@@ -70,13 +75,13 @@ as_flextable.DemographicTable <- function(x, ...) {
     add_header_row(values = c(' ', group), colwidths = c(1, nc), top = TRUE) |>
     add_header_row(values = c(' ', dnm), colwidths = c(1, nc), top = TRUE) |>
     add_footer_row(values = c(' ', group), colwidths = c(1, nc), top = FALSE) |>
-    hline_bottom(border = fp_border(width = 1.5), part = 'all') |> # to make sure each row of footer has a bottom
+    hline_bottom(border = border_hard_, part = 'all') |> # to make sure each row of footer has a bottom
     add_footer_row(values = c(' ', dnm), colwidths = c(1, nc), top = FALSE) |>
-    hline_bottom(border = fp_border(width = 1.5), part = 'all') |>
+    hline_bottom(border = border_hard_, part = 'all') |>
     
     # [vline]: must be after adding all 'footer' !
-    vline(j = v_hard, border = fp_border(width = 1.5), part = 'all') |>
-    vline(j = v_soft, border = fp_border(width = .5), part = 'all') |>
+    vline(j = v_hard, border = border_hard_, part = 'all') |>
+    vline(j = v_soft, border = border_soft_, part = 'all') |>
   
     merge_h(part = 'header') |>
     merge_v(part = 'header') |>
