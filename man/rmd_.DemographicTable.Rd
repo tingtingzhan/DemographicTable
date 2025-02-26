@@ -4,14 +4,12 @@
 \alias{rmd_.DemographicTable}
 \title{Create R Markdown Script for \link{DemographicTable}}
 \usage{
-rmd_.DemographicTable(x, xnm, autofold = TRUE, ...)
+rmd_.DemographicTable(x, xnm, ...)
 }
 \arguments{
 \item{x}{a \link{DemographicTable}}
 
 \item{xnm}{\link[base]{character} scalar, call of \code{x}}
-
-\item{autofold}{\link[base]{logical} scalar}
 
 \item{...}{additional parameters, currently not in use}
 }
