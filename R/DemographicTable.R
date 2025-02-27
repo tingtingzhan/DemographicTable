@@ -27,8 +27,6 @@
 #' @param include_rx (optional) \link[base]{regex}, 
 #' pattern of the names of the variable(s) to be included.
 #' 
-#' @param paired \link[base]{logical} scalar, whether to perform paired test (default `FALSE`)
-#' 
 #' @param robust \link[base]{logical} scalar. 
 #' If `TRUE` (default), use non-parametric methods for 
 #' non-normally distributed \link[base]{numeric} variables.
@@ -70,7 +68,6 @@
 #' tgr = within(ToothGrowth, expr = { dose = factor(dose) })
 #' DemographicTable(tgr, include = c('supp', 'len', 'dose'))
 #' DemographicTable(tgr, groups = 'supp', include = c('len', 'dose'))
-#' DemographicTable(tgr, groups = 'supp', include = 'len', paired = TRUE)
 #' DemographicTable(tgr, groups = 'supp', include = 'len', compare = FALSE)
 #' DemographicTable(tgr, groups = c('supp', 'dose'), include = c('len', 'supp'))
 #' 
@@ -91,7 +88,6 @@ DemographicTable <- function(
     groups = NULL,
     exclude = NULL, exclude_rx, 
     include, include_rx, 
-    paired = FALSE,
     robust = TRUE,
     overall = TRUE, 
     compare = TRUE,
@@ -197,14 +193,11 @@ DemographicTable <- function(
   # Done! use `data`, `vlst` and `groups` below
   ######################
   
-  overall <- overall & !paired
-  
   ret0 <- if (overall) list(.sumtab(data, data.name = data.name, vlst = vlst, ...)) # else NULL      
   ret1 <- if (length(groups)) {
     # in this way, `names(groups)` won't be passed into [.sumtab_by]
-    # lapply(groups, FUN = .sumtab_by, data = data, data.name = data.name, vlst = vlst, compare = compare, paired = paired, robust = robust, pairwise = pairwise, ...)
     lapply(seq_along(groups), FUN = function(i) {
-      .sumtab_by(data = data, data.name = data.name, group = groups[i], vlst = vlst, compare = compare, paired = paired, robust = robust, pairwise = pairwise, ...)
+      .sumtab_by(data = data, data.name = data.name, group = groups[i], vlst = vlst, compare = compare, robust = robust, pairwise = pairwise, ...)
     })
   }
   ret <- c(ret0, ret1)
@@ -269,7 +262,7 @@ DemographicTable <- function(
 
 
 
-.sumtab_by <- function(data, data.name, vlst, group, robust = TRUE, compare = TRUE, paired = FALSE, pairwise = 3L, ...) { # SMD = FALSE, 
+.sumtab_by <- function(data, data.name, vlst, group, robust = TRUE, compare = TRUE, pairwise = 3L, ...) { # SMD = FALSE, 
   
   if (!is.character(group) || length(group) != 1L || anyNA(group) || !nzchar(group)) stop('`group` must be len-1 character')
   
@@ -280,9 +273,7 @@ DemographicTable <- function(
   ret <- do.call(cbind, args = lapply(gidx, FUN = function(id) { # (id = gidx[[1L]])
     .sumtab(data[id, , drop = FALSE], data.name = '', vlst = vlst, ...)
   }))
-  colnames(ret) <- if (!paired) {
-    sprintf(fmt = '%s\nn=%d (%.1f%%)', names(gidx), gN, 1e2*gN/length(fgrp)) # before removing NA!!!
-  } else sprintf(fmt = '%s\nn=%d', names(gidx), gN)
+  colnames(ret) <- sprintf(fmt = '%s\nn=%d (%.1f%%)', names(gidx), gN, 1e2*gN/length(fgrp)) # before removing NA!!!
   
   # removing single 'group' for p-values
   txt_g1 <- if (any(g1 <- (gN == 1L))) {
@@ -295,9 +286,9 @@ DemographicTable <- function(
   if (ng < 2L) return(ret)
   
   if (compare) {
-    p_double <- vapply(c(vlst$integer, vlst$numeric, vlst$difftime), FUN = function(i) compare_double(demo_get(x = data[[i]], gidx = gidx), paired = paired, robust = robust, pairwise = pairwise, ...), FUN.VALUE = '')
-    p_bool <- vapply(vlst$logical, FUN = function(i) compare_bool(demo_get(x = data[[i]], gidx = gidx), paired = paired, pairwise = pairwise, ...), FUN.VALUE = '')
-    p_factor <- vapply(c(vlst$character, vlst$factor, vlst$ordered), FUN = function(i) compare_factor(x = data[[i]], g = fgrp, paired = paired, ...), FUN.VALUE = '')
+    p_double <- vapply(c(vlst$integer, vlst$numeric, vlst$difftime), FUN = function(i) compare_double(demo_get(x = data[[i]], gidx = gidx), robust = robust, pairwise = pairwise, ...), FUN.VALUE = '')
+    p_bool <- vapply(vlst$logical, FUN = function(i) compare_bool(demo_get(x = data[[i]], gidx = gidx), pairwise = pairwise, ...), FUN.VALUE = '')
+    p_factor <- vapply(c(vlst$character, vlst$factor, vlst$ordered), FUN = function(i) compare_factor(x = data[[i]], g = fgrp, ...), FUN.VALUE = '')
     pval <- c(p_double, p_bool, p_factor)
     if (dim(ret)[1L] != length(pval)) stop('demographic table contruction wrong: pval do not match summary stats')
     ret_compare <- as.matrix(pval)
@@ -327,7 +318,6 @@ demo_get <- function(x, gidx) {
   xm <- is.matrix(x)
   xs <- lapply(gidx, FUN = function(i) {
     y <- unclass(if (xm) c(x[i, ]) else x[i])
-    #y[!is.na(y)] # do NOT do this, for `paired` test
     if (all(is.na(y))) return(NULL) # remove all-NA elements
     return(y)
   })
@@ -358,15 +348,11 @@ pText_pairwise.htest <- function(x) {
 
 # @param pairwise \link[base]{integer} scalar, the maximum group number under which pairwise tests,
 # \link[stats]{pairwise.t.test} and \link[stats]{pairwise.wilcox.test}, are preferred.  Default value `3L`.
-compare_double <- function(xs, CLT = TRUE, robust = TRUE, pairwise = 3L, alternative = c('two.sided', 'less', 'greater'), paired = FALSE, ...) {
+compare_double <- function(xs, CLT = TRUE, robust = TRUE, pairwise = 3L, alternative = c('two.sided', 'less', 'greater'), ...) {
   
   ng <- length(xs)
   if (ng <= 1L) return('1 arm or less')
-  if (paired) {
-    if (all(duplicated.default(xs)[-1L])) return('') # e.g., paired differences all zero
-    #if (!all(duplicated.default(lengths(xs, use.names = FALSE))[-1L])) stop('Sample size per group must be all-same for paired test')
-  }
-
+  
   alternative <- match.arg(alternative)
   
   p_shapiro <- if (!robust) 1 else vapply(xs, FUN = pval_shapiro, CLT = CLT, FUN.VALUE = 0, USE.NAMES = FALSE)
@@ -374,17 +360,15 @@ compare_double <- function(xs, CLT = TRUE, robust = TRUE, pairwise = 3L, alterna
   if (ng == 2L) { # ?stats::t.test or ?stats::wilcox.test
     # always `2L` vs. `1L` (column 1 as reference)
     if (any(p_shapiro < .05)) {
-      test <- tryCatch(suppressWarnings(wilcox.test(x = xs[[2L]], y = xs[[1L]], paired = paired, exact = FALSE, conf.int = TRUE, alternative = alternative)), error = identity)
+      test <- tryCatch(suppressWarnings(wilcox.test(x = xs[[2L]], y = xs[[1L]], exact = FALSE, conf.int = TRUE, alternative = alternative)), error = identity)
       if (inherits(test, what = 'error')) return('')
-      est <- test$estimate # whether `paired` or not
-      #fmt <- paste0('Median diff: %.3f\n95%% CI (%.3f, %.3f)\np = %.3f', symb(test$p.value), '\n', if (paired) 'Paired ', 'Wilcoxon-\nMann-Whitney')
-      fmt <- paste0('%.3f', symb(test$p.value), '\n', if (paired) 'Paired ', 'Wilcoxon-\nMann-Whitney')
+      est <- test$estimate
+      fmt <- paste0('%.3f', symb(test$p.value), '\n', 'Wilcoxon-\nMann-Whitney')
     } else {
-      test <- t.test(x = xs[[2L]], y = xs[[1L]], paired = paired, alternative = alternative)
+      test <- t.test(x = xs[[2L]], y = xs[[1L]], alternative = alternative)
       if (is.na(test$statistic)) return('') # very likely identical(x, y) in ?stats::t.test
-      est <- if (paired) test$estimate else test$estimate[1L] - test$estimate[2L]
-      #fmt <- paste0('Mean diff: %.3f\n95%% CI (%.3f, %.3f)\np = %.3f', symb(test$p.value), '\n', if (paired) 'Paired' else 'Two-Sample', ' t')
-      fmt <- paste0('%.3f', symb(test$p.value), '\n', if (paired) 'Paired' else 'Two-Sample', ' t')
+      est <- test$estimate[1L] - test$estimate[2L]
+      fmt <- paste0('%.3f', symb(test$p.value), '\n', 'Two-Sample', ' t')
     }
     #return(sprintf(fmt = fmt, est, test$conf.int[1L], test$conf.int[2L], test$p.value))
     return(sprintf(fmt = fmt, test$p.value))
@@ -398,12 +382,11 @@ compare_double <- function(xs, CLT = TRUE, robust = TRUE, pairwise = 3L, alterna
   
   if (any(p_shapiro < .05)) {
     if (ng <= pairwise) {
-      suppressWarnings(tmp <- pairwise.wilcox.test(x = x, g = g, p.adjust.method = 'none', paired = paired, alternative = alternative))
+      suppressWarnings(tmp <- pairwise.wilcox.test(x = x, g = g, p.adjust.method = 'none', alternative = alternative))
       # ?stats::pairwise.wilcox.test only provides p-value, not confidence intervals
-      return(paste(c(pText_pairwise.htest(tmp), paste0('Pairwise ', if (paired) 'Paired\n', 'Wilcoxon-Mann-Whitney')), collapse = '\n'))
+      return(paste(c(pText_pairwise.htest(tmp), 'Pairwise Wilcoxon-Mann-Whitney'), collapse = '\n'))
     }
     
-    if (paired) stop('Paired Kruskal-Wallis test?')
     return(tryCatch(expr = {
       p.value <- kruskal.test(x = x, g = g, ...)$p.value
       sprintf(fmt = paste0(symb(p.value), '%.3f\nKruskal-Wallis'), p.value)
@@ -411,12 +394,11 @@ compare_double <- function(xs, CLT = TRUE, robust = TRUE, pairwise = 3L, alterna
   }
   
   if (ng <= pairwise) {
-    tmp <- pairwise.t.test(x = x, g = g, pool.sd = FALSE, paired = paired, p.adjust.method = 'none', alternative = alternative)
-    return(paste(c(pText_pairwise.htest(tmp), paste0('Pairwise ', if (paired) 'Paired\n', 'Two-Sample t')), collapse = '\n'))
+    tmp <- pairwise.t.test(x = x, g = g, pool.sd = FALSE, p.adjust.method = 'none', alternative = alternative)
+    return(paste(c(pText_pairwise.htest(tmp), 'Pairwise Two-Sample t'), collapse = '\n'))
   }
   
   # ?stats::aov requires formula~data parameterization
-  if (paired) stop('Paired ANOVA; not supported yet')
   return(tryCatch(expr = {
     p.value <- summary(aov(x ~ g))[[1L]][1L, 'Pr(>F)']
     sprintf(fmt = paste0(symb(p.value), '%.3f\nANOVA'), p.value)
@@ -426,18 +408,14 @@ compare_double <- function(xs, CLT = TRUE, robust = TRUE, pairwise = 3L, alterna
 
 
 
-compare_bool <- function(xs, pairwise = 3L, alternative = c('two.sided', 'less', 'greater'), paired = FALSE, ...) {
+compare_bool <- function(xs, pairwise = 3L, alternative = c('two.sided', 'less', 'greater'), ...) {
   
   ng <- length(xs)
   if (ng <= 1L) return('1 arm or less')
-  if (paired) {
-    if (all(duplicated.default(xs)[-1L])) return('') # e.g., variables not changing across time
-    if (!all(duplicated.default(lengths(xs, use.names = FALSE))[-1L])) stop('Sample size per group must be all-same for paired test')
-  }
   
   alternative <- match.arg(alternative)
   
-  xs0 <- lapply(xs, FUN = function(x) x[!is.na(x)]) # must save `xs` for 'paired = TRUE'
+  xs0 <- lapply(xs, FUN = function(x) x[!is.na(x)])
   X <- vapply(xs0, FUN = sum, FUN.VALUE = 0L, USE.NAMES = TRUE)
   N <- lengths(xs0, use.names = TRUE)
   fish <- tryCatch(fisher.test(cbind(X, N-X), alternative = alternative), error = function(e) {
@@ -448,25 +426,6 @@ compare_bool <- function(xs, pairwise = 3L, alternative = c('two.sided', 'less',
   fisher_txt <- sprintf(fmt = paste0(symb(fish$p.value), '%.3f\nFisher\'s Exact'), fish$p.value)
   
   if (ng == 2L) {
-    
-    if (paired) {
-      # McNemar test not available for degenerated 2*2 table
-      x1 <- xs[[1L]]
-      x2 <- xs[[2L]]
-      ok <- (!is.na(x1) & !is.na(x2))
-      x10 <- x1[ok]
-      x20 <- x2[ok]
-      if (all(x10) || !any(x10) || all(x20) || !any(x20)) return('')
-      if (all(x10 == x20)) return('All non-missing pairs identical')
-      mcnemar <- tryCatch(mcnemar.test(x = x10, y = x20), error = identity)
-      if (inherits(mcnemar, 'error')) {
-        #print(freqs(x10))
-        #print(freqs(x20))
-        stop('here')
-      }
-      return(sprintf(fmt = paste0(symb(mcnemar$p.value), '%.3f\nMcNemar\'s'), mcnemar$p.value))
-    }
-    
     if (any(X == 0L, X == N)) return('') # p-value means nothing
     return(tryCatch(expr = {
       #p.value <- binom.test(x = X, n = N, alternative = alternative)$p.value
@@ -477,12 +436,10 @@ compare_bool <- function(xs, pairwise = 3L, alternative = c('two.sided', 'less',
   }
   
   if (ng <= pairwise) {
-    if (paired) stop('Paired McNemar test, not ready yet')
     tmp <- suppressWarnings(pairwise.prop.test(x = X, n = N, p.adjust.method = 'none', alternative = alternative))
     return(paste(c(pText_pairwise.htest(tmp), '\u03C7\u00B2'), collapse = '\n'))
   }
   
-  if (paired) stop('not ready yet')
   return(fisher_txt)
   
 }
@@ -490,19 +447,13 @@ compare_bool <- function(xs, pairwise = 3L, alternative = c('two.sided', 'less',
 
 
 
-compare_factor <- function(x, g, paired = FALSE, ...) {
+compare_factor <- function(x, g, ...) {
   # will use ?stats::fisher.test or ?stats::chisq.test even if the factor has 2 levels (i.e. essentially binary)
   
   if (is.matrix(x)) g <- rep(g, times = dim(x)[2L]) # as of 2022-03-08, ?base::table will not recycle shorter argument
   tab <- table(x, g, useNA = 'no') # `x` can be either 'factor' or 'character'
   if (anyNA(tab)) stop('should not happen')
   if (any(dim(tab) == 1L)) return('') # no comparison should be given
-  
-  if (paired) {
-    #xs <- lapply(seq_len(dim(tab)[2L]), FUN = function(i) tab[,i])
-    #if (all(duplicated.default(xs)[-1L])) return('') # e.g., variables not changing across time
-    #stop('not ready yet')
-  }
   
   # ?stats::fisher.test removes all-0 rows or columns
   tmp <- tryCatch(fisher.test(tab), error = function(e) {
