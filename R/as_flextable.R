@@ -62,7 +62,9 @@ as_flextable.DemographicTable <- function(x, ...) {
   
   border_hard_ <- fp_border(width = 1.5, color = 'gray40')
   # *looks* like default border used in ?flextable::flextable
-  # tzh does *not* know how to find out for sure, for now
+  # tzh does *not* know how to find out for sure, for now..
+  # ?flextable:::print.flextable
+  # ?flextable::htmltools_value
   border_soft_ <- fp_border(width = .5, color = 'gray40')
   
   x1 |> 

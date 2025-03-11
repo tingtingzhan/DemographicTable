@@ -484,3 +484,35 @@ compare_factor <- function(x, g, ...) {
 # file.remove(out)
 # 
 
+
+
+
+#' @title Description for \link[DemographicTable]{DemographicTable}
+#' 
+#' @description
+#' ..
+#' 
+#' @param x a \link[DemographicTable]{DemographicTable}
+#' 
+#' @returns 
+#' Function [Sprintf.DemographicTable()] returns a \link[base]{character} scalar.
+#' 
+#' @keywords internal
+#' @export
+Sprintf.DemographicTable <- function(x) {
+  
+  dnm. <- vapply(x, FUN = attr, which = 'data.name', exact = TRUE, FUN.VALUE = '')
+  dnm <- paste0('`', unique.default(dnm.), '`', collapse = ', ')
+  
+  grp. <- vapply(x, FUN = attr, which = 'group', exact = TRUE, FUN.VALUE = '')
+  grp <- unique.default(grp.[nzchar(grp.)])
+  
+  paste0(
+    'Descriptive statistics, e.g., means, medians, standard deviations, inter-quartile ranges (IQR) and percentages, ',
+    if (length(grp)) paste0('per group of ', paste0('`', grp, '`', collapse = ', '), ' '), # else NULL
+    sprintf(fmt = 'in dataset(s) %s ', dnm),
+    'are provided using <u>**`R`**</u>.'
+  )
+  
+}
+
