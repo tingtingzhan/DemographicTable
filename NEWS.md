@@ -1,3 +1,5 @@
+# DemographicTable 0.1.11
+Usage of logical variable is discouraged (via warning); suggests using factor
 # DemographicTable 0.1.10
 'DemographicTable' object is now a 'list' of 'matrix'es.
 
