@@ -8,7 +8,7 @@ Description: Functions for creating demographic table of simple summary
         value is printed via package 'flextable'.
 License: GPL-2
 Encoding: UTF-8
-Imports: flextable, officer, scales
+Imports: cli, flextable, officer, scales
 Authors@R: c(person(given = "Tingting", family = "Zhan", role =
         c("aut", "cre"), email = c("tingtingzhan@gmail.com"), comment =
         c(ORCID = '0000-0001-9971-4844')))

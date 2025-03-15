@@ -97,4 +97,8 @@ DemographicTable(warpbreaks, groups = 'tension')
 # missing value in `groups`
 DemographicTable(MASS::survey, groups = c('M.I'))
 
+mtcars$vs = as.logical(mtcars$vs)
+tryCatch(DemographicTable(mtcars, groups = 'am', include = c('hp', 'drat')), warning = identity)
+mtcars$am = as.logical(mtcars$am)
+tryCatch(DemographicTable(mtcars, groups = 'cyl', include = c('vs')), warning = identity)
 }

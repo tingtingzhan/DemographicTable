@@ -130,6 +130,7 @@
 #' @rdname sumstat
 #' @export
 .sumstat.logical <- function(x, ...) {
+  warning(msg_logical())
   if (!length(x)) return('')
   xok <- !is.na(x)
   if (!any(xok)) return('')
