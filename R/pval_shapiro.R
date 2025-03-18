@@ -15,7 +15,7 @@
 #' 
 #' @details 
 #' 
-#' Function [pval_shapiro] provides a pseudo \eqn{p}-value for several exceptions of
+#' Function [pval_shapiro()] provides a pseudo \eqn{p}-value for several exceptions of
 #' \link[stats]{shapiro.test}, serving as a criteria of whether robust statistics/tests need to be used
 #' \describe{
 #' \item{`length(x) < 3L`}{returns \eqn{p=0}, indicating that robust methods are needed.}
@@ -26,7 +26,7 @@
 #' }
 #' 
 #' @returns 
-#' Function [pval_shapiro] returns a \link[base]{double} scalar.
+#' Function [pval_shapiro()] returns a \link[base]{double} scalar.
 #' 
 #' @examples 
 #' pval_shapiro(rnorm(5))

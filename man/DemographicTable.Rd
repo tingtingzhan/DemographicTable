@@ -60,8 +60,8 @@ Default \code{3L}.}
 \item{...}{additional parameters, currently not in use}
 }
 \value{
-Function \link{DemographicTable} returns an object of S3 class \code{'DemographicTable'},
-which is a \link[base]{list} of \link[base]{matrix}-es.
+Function \code{\link[=DemographicTable]{DemographicTable()}} returns an object of S3 class \code{'DemographicTable'},
+which is a \link[stats]{listof} \code{'sumtab'} elements.
 }
 \description{
 Create a demographic table with simple summary statistics, with optional comparison(s) over one or more groups.
@@ -98,7 +98,7 @@ DemographicTable(warpbreaks, groups = 'tension')
 DemographicTable(MASS::survey, groups = c('M.I'))
 
 mtcars$vs = as.logical(mtcars$vs)
-tryCatch(DemographicTable(mtcars, groups = 'am', include = c('hp', 'drat')), warning = identity)
 mtcars$am = as.logical(mtcars$am)
+tryCatch(DemographicTable(mtcars, groups = 'am', include = c('hp', 'drat')), warning = identity)
 tryCatch(DemographicTable(mtcars, groups = 'cyl', include = c('vs')), warning = identity)
 }

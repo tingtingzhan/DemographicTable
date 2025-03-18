@@ -11,7 +11,7 @@
 #' 
 #' @returns 
 #' 
-#' Function [.sumstat] returns a \link[base]{character} scalar.
+#' Function [.sumstat()] returns a \link[base]{character} scalar.
 #' 
 #' @examples 
 #' x = c(rpois(n = 20L, lambda = 2), NA_integer_)
@@ -39,7 +39,7 @@
 #' @param fmt (optional) \link[base]{character} scalar, only for function [.sumstat.default], see function \link[base]{sprintf}
 #' 
 #' @details
-#' Function [.sumstat.default] accepts all R objects of \link[base]{typeof} \link[base]{double} and \link[base]{integer}.
+#' Function [.sumstat.default()] accepts all R objects of \link[base]{typeof} \link[base]{double} and \link[base]{integer}.
 #' Statistics of \link[base]{mean}, \link[stats]{sd} and \link[base]{range} are reported.
 #' If the normality assumption via \link[stats]{shapiro.test} is not satisfied, then \link[stats]{median} and \link[stats]{mad} are also reported.
 #' 

@@ -14,14 +14,14 @@ pval_shapiro(x, CLT = FALSE, ...)
 \item{...}{additional parameters, currently not in use}
 }
 \value{
-Function \link{pval_shapiro} returns a \link[base]{double} scalar.
+Function \code{\link[=pval_shapiro]{pval_shapiro()}} returns a \link[base]{double} scalar.
 }
 \description{
 Obtain \eqn{p}-value from \link[stats]{shapiro.test},
 taking into consideration of several exceptions.
 }
 \details{
-Function \link{pval_shapiro} provides a pseudo \eqn{p}-value for several exceptions of
+Function \code{\link[=pval_shapiro]{pval_shapiro()}} provides a pseudo \eqn{p}-value for several exceptions of
 \link[stats]{shapiro.test}, serving as a criteria of whether robust statistics/tests need to be used
 \describe{
 \item{\code{length(x) < 3L}}{returns \eqn{p=0}, indicating that robust methods are needed.}

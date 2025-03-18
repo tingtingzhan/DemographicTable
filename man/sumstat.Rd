@@ -30,13 +30,13 @@
 \item{...}{additional parameters, currently not in use}
 }
 \value{
-Function \link{.sumstat} returns a \link[base]{character} scalar.
+Function \code{\link[=.sumstat]{.sumstat()}} returns a \link[base]{character} scalar.
 }
 \description{
 Provide the summary statistics of an R object
 }
 \details{
-Function \link{.sumstat.default} accepts all R objects of \link[base]{typeof} \link[base]{double} and \link[base]{integer}.
+Function \code{\link[=.sumstat.default]{.sumstat.default()}} accepts all R objects of \link[base]{typeof} \link[base]{double} and \link[base]{integer}.
 Statistics of \link[base]{mean}, \link[stats]{sd} and \link[base]{range} are reported.
 If the normality assumption via \link[stats]{shapiro.test} is not satisfied, then \link[stats]{median} and \link[stats]{mad} are also reported.
 }

@@ -10,7 +10,7 @@
 #' @param ... additional parameters, not currently in use 
 #' 
 #' @returns 
-#' Function [as_flextable.DemographicTable] returns a \link[flextable]{flextable}.
+#' Function [as_flextable.DemographicTable()] returns a \link[flextable]{flextable}.
 #' 
 #' @note
 #' End user may use function \link[flextable]{set_caption} to add a caption to the output demographic table.
@@ -28,7 +28,9 @@ as_flextable.DemographicTable <- function(x, ...) {
   
   x0 <- do.call(cbind, args = x)
   
-  group. <- unlist(lapply(x, FUN = attr, which = 'group', exact = TRUE), use.names = TRUE) # *not* ?base::vapply (which does not retain names)
+  group. <- x |>
+    lapply(FUN = attr, which = 'group', exact = TRUE) |>
+    unlist(use.names = TRUE) # *not* ?base::vapply (which does not retain names)
   group <- names(group.) # `names('')` returns NULL
   if (!length(group)) group <- ''
   if (any(z_grp <- !nzchar(group))) {
@@ -55,7 +57,10 @@ as_flextable.DemographicTable <- function(x, ...) {
     prev + seq_len(j - if (compare[i]) 1L else 0L) + 1L # first column being variable names
   })
   v2_hue <- v1_hue[lengths(v1_hue) > 0L] # columns to have color
-  hue_color <- unlist(lapply(lengths(v2_hue), FUN = pal_hue()), use.names = FALSE) # !length(v_hue) compatible
+  hue_color <- v2_hue |>
+    lengths() |>
+    lapply(FUN = pal_hue()) |>
+    unlist(use.names = FALSE) # !length(v_hue) compatible
   v_hue <- if (length(v2_hue)) unlist(v2_hue) else numeric() # must; otherwise ?flextable::color error!!
    
   nr <- dim(x0)[1L]

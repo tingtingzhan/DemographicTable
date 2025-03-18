@@ -12,7 +12,7 @@
 \item{...}{additional parameters, not currently in use}
 }
 \value{
-Function \link{as_flextable.DemographicTable} returns a \link[flextable]{flextable}.
+Function \code{\link[=as_flextable.DemographicTable]{as_flextable.DemographicTable()}} returns a \link[flextable]{flextable}.
 }
 \description{
 Convert a \link{DemographicTable} to a \link[flextable]{flextable} object.
