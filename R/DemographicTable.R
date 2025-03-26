@@ -62,30 +62,8 @@
 #' Function [DemographicTable()] returns an object of S3 class `'DemographicTable'`, 
 #' which is a \link[stats]{listof} `'sumtab'` elements.
 #' 
+#' @keywords internal
 #' @importFrom stats aov chisq.test fisher.test kruskal.test mcnemar.test pairwise.prop.test pairwise.t.test pairwise.wilcox.test prop.test quantile t.test sd wilcox.test
-#' 
-#' @examples 
-#' tgr = within(ToothGrowth, expr = { dose = factor(dose) })
-#' DemographicTable(tgr, include = c('supp', 'len', 'dose'))
-#' DemographicTable(tgr, groups = 'supp', include = c('len', 'dose'))
-#' DemographicTable(tgr, groups = 'supp', include = 'len', compare = FALSE)
-#' DemographicTable(tgr, groups = c('supp', 'dose'), include = c('len', 'supp'))
-#' 
-#' (tb1 = DemographicTable(CO2, groups = 'Type', include = c('conc', 'uptake')))
-#' CO2_nonchilled = subset(CO2, Treatment == 'nonchilled')
-#' (tb2 = DemographicTable(CO2_nonchilled, groups = 'Type', include = c('conc', 'uptake')))
-#' c(tb1, tb2)
-#' 
-#' # pairwise comparision
-#' DemographicTable(warpbreaks, groups = 'tension')
-#' 
-#' # missing value in `groups`
-#' DemographicTable(MASS::survey, groups = c('M.I'))
-#' 
-#' mtcars$vs = as.logical(mtcars$vs)
-#' mtcars$am = as.logical(mtcars$am)
-#' tryCatch(DemographicTable(mtcars, groups = 'am', include = c('hp', 'drat')), warning = identity)
-#' tryCatch(DemographicTable(mtcars, groups = 'cyl', include = c('vs')), warning = identity)
 #' @export
 DemographicTable <- function(
     data, data.name = substitute(data), 

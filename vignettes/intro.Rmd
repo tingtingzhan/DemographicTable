@@ -1,0 +1,64 @@
+---
+title: "Create Demographic Table"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{intro}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+library(knitr)
+opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+options(rmarkdown.html_vignette.check_title = FALSE)
+```
+
+```{r setup}
+library(DemographicTable)
+```
+
+```{r}
+tgr = ToothGrowth |> within.data.frame(expr = {
+  dose = factor(dose) 
+})
+DemographicTable(tgr, include = c('supp', 'len', 'dose')) |> as_flextable()
+```
+
+```{r}
+DemographicTable(tgr, groups = 'supp', include = c('len', 'dose')) |> as_flextable()
+```
+
+```{r}
+DemographicTable(tgr, groups = 'supp', include = 'len', compare = FALSE) |> as_flextable()
+```
+
+```{r}
+DemographicTable(tgr, groups = c('supp', 'dose'), include = c('len', 'supp')) |> as_flextable()
+```
+
+```{r}
+tb1 = DemographicTable(CO2, groups = 'Type', include = c('conc', 'uptake'))
+CO2_nonchilled = subset(CO2, Treatment == 'nonchilled')
+tb2 = DemographicTable(CO2_nonchilled, groups = 'Type', include = c('conc', 'uptake'))
+c(tb1, tb2) |> as_flextable()
+```
+
+# pairwise comparision
+```{r}
+DemographicTable(warpbreaks, groups = 'tension') |> as_flextable()
+```
+
+# missing value in `groups`
+```{r}
+DemographicTable(MASS::survey, groups = c('M.I'), include = c('Pulse', 'Fold')) |> as_flextable()
+```
+
+```{r}
+mtcars$vs = as.logical(mtcars$vs)
+mtcars$am = as.logical(mtcars$am)
+tryCatch(DemographicTable(mtcars, groups = 'am', include = c('hp', 'drat')), warning = identity)
+tryCatch(DemographicTable(mtcars, groups = 'cyl', include = c('vs')), warning = identity)
+```

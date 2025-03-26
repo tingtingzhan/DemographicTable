@@ -79,26 +79,4 @@ If \code{group} is specified, they are compared using two-sample \link[stats]{t.
 If \code{group} is specified, they are compared using \link[stats]{prop.test} (chi-squared)
 and/or \link[stats]{fisher.test} (Fisher's exact).
 }
-\examples{
-tgr = within(ToothGrowth, expr = { dose = factor(dose) })
-DemographicTable(tgr, include = c('supp', 'len', 'dose'))
-DemographicTable(tgr, groups = 'supp', include = c('len', 'dose'))
-DemographicTable(tgr, groups = 'supp', include = 'len', compare = FALSE)
-DemographicTable(tgr, groups = c('supp', 'dose'), include = c('len', 'supp'))
-
-(tb1 = DemographicTable(CO2, groups = 'Type', include = c('conc', 'uptake')))
-CO2_nonchilled = subset(CO2, Treatment == 'nonchilled')
-(tb2 = DemographicTable(CO2_nonchilled, groups = 'Type', include = c('conc', 'uptake')))
-c(tb1, tb2)
-
-# pairwise comparision
-DemographicTable(warpbreaks, groups = 'tension')
-
-# missing value in `groups`
-DemographicTable(MASS::survey, groups = c('M.I'))
-
-mtcars$vs = as.logical(mtcars$vs)
-mtcars$am = as.logical(mtcars$am)
-tryCatch(DemographicTable(mtcars, groups = 'am', include = c('hp', 'drat')), warning = identity)
-tryCatch(DemographicTable(mtcars, groups = 'cyl', include = c('vs')), warning = identity)
-}
+\keyword{internal}

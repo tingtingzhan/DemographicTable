@@ -129,11 +129,19 @@ as_flextable.sumtab <- function(x, ...) {
 
 
 
-# ?base::print'
+# ?base::print
 # @export print.DemographicTable
 #' @export
-print.DemographicTable <- function(x, ...) print(as_flextable.DemographicTable(x, ...))
+print.DemographicTable <- function(x, ...) {
+  x |> 
+    as_flextable.DemographicTable(...) |> 
+    print()
+}
 
 # @export print.sumtab
 #' @export
-print.sumtab <- function(x, ...) print(as_flextable.sumtab(x, ...))
+print.sumtab <- function(x, ...) {
+  x |>
+    as_flextable.sumtab(...) |> 
+    print()
+}

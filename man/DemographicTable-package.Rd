@@ -3,8 +3,11 @@
 \docType{package}
 \name{DemographicTable-package}
 \alias{DemographicTable-package}
-\title{Create Demographic Table}
+\title{DemographicTable: Create Demographic Table}
 \description{
+Functions for creating demographic table of simple summary statistics and comparison(s) over one or more groups.
+}
+\details{
 Functions for creating demographic table with simple summary statistics, with optional comparison(s) over one or more groups.
 Numeric variables are summarized in means, standard deviations, medians, inter-quartile-ranges (IQR),
 skewness, Shapiro-Wilk normality test and ranges, and compared using two-sample \eqn{t}-test,
@@ -13,6 +16,12 @@ Logical and factor variables are summarized in counts and percentages and
 compared using chi-squared test and/or Fisher's exact test.
 
 Returned value is printed via package \CRANpkg{flextable}.
+}
+\note{
+Help files of individual functions are intentionally suppressed in the \code{pdf} manual.
+Users are encouraged to get started with
+
+\code{vignette('intro', package = 'DemographicTable')}
 }
 \author{
 \strong{Maintainer}: Tingting Zhan \email{tingtingzhan@gmail.com} (\href{https://orcid.org/0000-0001-9971-4844}{ORCID})
