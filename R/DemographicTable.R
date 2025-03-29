@@ -85,7 +85,7 @@ DemographicTable <- function(
   if (!is.data.frame(data)) stop('input must be data.frame')
   data <- as.data.frame(data) # use S3
   if (anyDuplicated.default(names(data))) stop('Duplicated column names in raw data?')
-  data <- data[!vapply(data, FUN = function(i) all(is.na(i)), FUN.VALUE = NA)] # remove all-missing columns 
+  data <- data[!vapply(data, FUN = \(i) all(is.na(i)), FUN.VALUE = NA)] # remove all-missing columns 
   
   if (length(groups)) {
     if (!is.character(groups) || anyNA(groups) || !all(nzchar(groups))) stop('groups must be character without NA or zchar')
@@ -158,7 +158,7 @@ DemographicTable <- function(
   
   # without `groups`
   # .. copy tzh::class1List
-  cl1 <- vapply(data[include], FUN = function(x) class(x)[1L], FUN.VALUE = '', USE.NAMES = TRUE)
+  cl1 <- vapply(data[include], FUN = \(x) class(x)[1L], FUN.VALUE = '', USE.NAMES = TRUE)
   vlst <- split.default(names(cl1), f = factor(cl1))
   
   if (length(vlst$matrix)) {
@@ -183,7 +183,7 @@ DemographicTable <- function(
     # in this way, `names(groups)` won't be passed into [.sumtab_by]
     groups |>
       seq_along() |>
-      lapply(FUN = function(i) {
+      lapply(FUN = \(i) {
         .sumtab_by(data = data, data.name = data.name, group = groups[i], vlst = vlst, compare = compare, robust = robust, pairwise = pairwise, ...)
       })
   }
@@ -264,7 +264,7 @@ DemographicTable <- function(
   gidx <- split.default(seq_along(fgrp), f = fgrp) # missingness in `fgrp` dropped
   gN <- lengths(gidx, use.names = FALSE)
   
-  ret <- do.call(cbind, args = lapply(gidx, FUN = function(id) { # (id = gidx[[1L]])
+  ret <- do.call(cbind, args = lapply(gidx, FUN = \(id) { # (id = gidx[[1L]])
     .sumtab(data[id, , drop = FALSE], data.name = '', vlst = vlst, ...)
   }))
   colnames(ret) <- sprintf(fmt = '%s\nn=%d (%.1f%%)', names(gidx), gN, 1e2*gN/length(fgrp)) # before removing NA!!!
@@ -280,9 +280,9 @@ DemographicTable <- function(
   if (ng < 2L) return(ret)
   
   if (compare) {
-    p_double <- vapply(c(vlst$integer, vlst$numeric, vlst$difftime), FUN = function(i) compare_double(demo_get(x = data[[i]], gidx = gidx), robust = robust, pairwise = pairwise, ...), FUN.VALUE = '')
-    p_bool <- vapply(vlst$logical, FUN = function(i) compare_bool(demo_get(x = data[[i]], gidx = gidx), pairwise = pairwise, ...), FUN.VALUE = '')
-    p_factor <- vapply(c(vlst$character, vlst$factor, vlst$ordered), FUN = function(i) compare_factor(x = data[[i]], g = fgrp, ...), FUN.VALUE = '')
+    p_double <- c(vlst$integer, vlst$numeric, vlst$difftime) |> vapply(FUN = \(i) compare_double(demo_get(x = data[[i]], gidx = gidx), robust = robust, pairwise = pairwise, ...), FUN.VALUE = '')
+    p_bool <- vlst$logical |> vapply(FUN = \(i) compare_bool(demo_get(x = data[[i]], gidx = gidx), pairwise = pairwise, ...), FUN.VALUE = '')
+    p_factor <- c(vlst$character, vlst$factor, vlst$ordered) |> vapply(FUN = \(i) compare_factor(x = data[[i]], g = fgrp, ...), FUN.VALUE = '')
     pval <- c(p_double, p_bool, p_factor)
     if (dim(ret)[1L] != length(pval)) stop('demographic table contruction wrong: pval do not match summary stats')
     ret_compare <- as.matrix(pval)
@@ -310,7 +310,7 @@ demo_get <- function(x, gidx) {
   # `x`: 'double', 'logical' or 'factor' responses to be compared
   # `gidx`: a 'list' of group indices
   xm <- is.matrix(x)
-  xs <- lapply(gidx, FUN = function(i) {
+  xs <- lapply(gidx, FUN = \(i) {
     y <- unclass(if (xm) c(x[i, ]) else x[i])
     if (all(is.na(y))) return(NULL) # remove all-NA elements
     return(y)
@@ -411,7 +411,7 @@ compare_bool <- function(xs, pairwise = 3L, alternative = c('two.sided', 'less',
   
   alternative <- match.arg(alternative)
   
-  xs0 <- lapply(xs, FUN = function(x) x[!is.na(x)])
+  xs0 <- lapply(xs, FUN = \(x) x[!is.na(x)])
   X <- vapply(xs0, FUN = sum, FUN.VALUE = 0L, USE.NAMES = TRUE)
   N <- lengths(xs0, use.names = TRUE)
   fish <- tryCatch(fisher.test(cbind(X, N-X), alternative = alternative), error = function(e) {
