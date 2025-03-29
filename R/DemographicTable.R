@@ -181,9 +181,11 @@ DemographicTable <- function(
   ret0 <- if (overall) list(.sumtab(data, data.name = data.name, vlst = vlst, ...)) # else NULL      
   ret1 <- if (length(groups)) {
     # in this way, `names(groups)` won't be passed into [.sumtab_by]
-    lapply(seq_along(groups), FUN = function(i) {
-      .sumtab_by(data = data, data.name = data.name, group = groups[i], vlst = vlst, compare = compare, robust = robust, pairwise = pairwise, ...)
-    })
+    groups |>
+      seq_along() |>
+      lapply(FUN = function(i) {
+        .sumtab_by(data = data, data.name = data.name, group = groups[i], vlst = vlst, compare = compare, robust = robust, pairwise = pairwise, ...)
+      })
   }
   ret <- c(ret0, ret1)
   if (!length(ret)) stop('wont happen')
@@ -337,6 +339,8 @@ pText_pairwise.htest <- function(x) {
 }
 
 
+# flextable.tzh::format_pval
+# tzh is not ready to publish \pkg{flextable.tzh}...
 
 # @param pairwise \link[base]{integer} scalar, the maximum group number under which pairwise tests,
 # \link[stats]{pairwise.t.test} and \link[stats]{pairwise.wilcox.test}, are preferred.  Default value `3L`.

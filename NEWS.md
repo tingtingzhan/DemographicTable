@@ -1,3 +1,5 @@
+# DemographicTable 0.2.0
+Vignettes.. finally!
 # DemographicTable 0.1.11
 Usage of logical variable is discouraged (via warning); suggests using factor
 # DemographicTable 0.1.10

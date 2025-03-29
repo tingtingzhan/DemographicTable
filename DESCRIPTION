@@ -1,8 +1,8 @@
 Package: DemographicTable
 Type: Package
 Title: Create Demographic Table
-Version: 0.1.11
-Date: 2025-03-15
+Version: 0.2.0
+Date: 2025-03-29
 Description: Functions for creating demographic table of simple summary
         statistics and comparison(s) over one or more groups.
 License: GPL-2

@@ -50,12 +50,14 @@ as_flextable.DemographicTable <- function(x, ...) {
   
   v_hard <- c(1L, 1L + cumsum(nc[-length(nc)]))
   v_soft <- setdiff(seq_len(sum(nc)), v_hard)
-  v1_hue <- lapply(seq_along(nc), FUN = function(i) {
-    j <- nc[i]
-    if (j == 1L) return(integer())
-    prev <- if (i == 1L) 0L else sum(nc[seq_len(i-1L)])
-    prev + seq_len(j - if (compare[i]) 1L else 0L) + 1L # first column being variable names
-  })
+  v1_hue <- nc |>
+    seq_along() |>
+    lapply(FUN = \(i) {
+      j <- nc[i]
+      if (j == 1L) return(integer())
+      prev <- if (i == 1L) 0L else sum(nc[seq_len(i-1L)])
+      prev + seq_len(j - if (compare[i]) 1L else 0L) + 1L # first column being variable names
+    })
   v2_hue <- v1_hue[lengths(v1_hue) > 0L] # columns to have color
   hue_color <- v2_hue |>
     lengths() |>

@@ -16,49 +16,98 @@ opts_chunk$set(
 options(rmarkdown.html_vignette.check_title = FALSE)
 ```
 
+# Introduction
+
+This vignette of package **`DemographicTable`** ([CRAN](https://cran.r-project.org/package=DemographicTable), [Github](https://github.com/tingtingzhan/DemographicTable)) presents an idiot-proof interface to create a summary table of simple statistics, often known as demographic table.
+
+## Note to Users
+
+Examples in this vignette require that the `search` path has
+
 ```{r setup}
 library(DemographicTable)
+set_flextable_defaults(font.size = 9)
 ```
 
+Users may remove the last pipe `|> as_flextable()` from all examples. The author of this package are forced to have it in this vignette to make package **`rmarkdown`** rendering work.
+
+
+# Demographic Table
+
+Data preparation
 ```{r}
-tgr = ToothGrowth |> within.data.frame(expr = {
-  dose = factor(dose) 
-})
-DemographicTable(tgr, include = c('supp', 'len', 'dose')) |> as_flextable()
+tgr = ToothGrowth |> 
+  within.data.frame(expr = {
+    dose = factor(dose) 
+  })
 ```
 
+## Summary of all subjects
 ```{r}
-DemographicTable(tgr, groups = 'supp', include = c('len', 'dose')) |> as_flextable()
+tgr |>
+  DemographicTable(include = c('supp', 'len', 'dose')) |> 
+  as_flextable()
 ```
 
+## Summary by one `group`
+
+Color of each `group` is determined by `scales::pal_hue()`, which is the default color pallete used in package **`ggplot2`**.
 ```{r}
-DemographicTable(tgr, groups = 'supp', include = 'len', compare = FALSE) |> as_flextable()
+tgr |>
+  DemographicTable(groups = 'supp', include = c('len', 'dose')) |> 
+  as_flextable()
 ```
 
-```{r}
-DemographicTable(tgr, groups = c('supp', 'dose'), include = c('len', 'supp')) |> as_flextable()
-```
+User may choose to hide the $p$-values with `compare = FALSE`.
 
 ```{r}
-tb1 = DemographicTable(CO2, groups = 'Type', include = c('conc', 'uptake'))
-CO2_nonchilled = subset(CO2, Treatment == 'nonchilled')
-tb2 = DemographicTable(CO2_nonchilled, groups = 'Type', include = c('conc', 'uptake'))
+tgr |>
+  DemographicTable(groups = 'supp', include = c('len', 'dose'), compare = FALSE) |> 
+  as_flextable()
+```
+
+## Summary by multiple `groups`
+
+```{r}
+tgr |>
+  DemographicTable(groups = c('supp', 'dose'), include = c('len', 'supp')) |>
+  as_flextable()
+```
+
+## Contatenate multiple `DemographicTable`s
+
+```{r}
+tb1 = CO2 |>
+  DemographicTable(groups = 'Type', include = c('conc', 'uptake'))
+tb2 = CO2 |>
+  subset(subset = (Treatment == 'nonchilled')) |> 
+  DemographicTable(groups = 'Type', include = c('conc', 'uptake'), data.name = 'CO2_nonchilled')
 c(tb1, tb2) |> as_flextable()
 ```
 
-# pairwise comparision
+# Exception Handling  
+
+## Missing value in `groups`
 ```{r}
-DemographicTable(warpbreaks, groups = 'tension') |> as_flextable()
+MASS::survey |>
+  DemographicTable(groups = c('M.I'), include = c('Pulse', 'Fold')) |>
+  as_flextable()
 ```
 
-# missing value in `groups`
-```{r}
-DemographicTable(MASS::survey, groups = c('M.I'), include = c('Pulse', 'Fold')) |> as_flextable()
+## Use of `logical` values
+
+Use of `logical` values is discouraged, as this practice is proved confusing to scientists without a strong data background.  A warning message will be printed.
+
+```{r echo=FALSE}
+msg_logical() |> cat()
 ```
 
 ```{r}
-mtcars$vs = as.logical(mtcars$vs)
-mtcars$am = as.logical(mtcars$am)
-tryCatch(DemographicTable(mtcars, groups = 'am', include = c('hp', 'drat')), warning = identity)
-tryCatch(DemographicTable(mtcars, groups = 'cyl', include = c('vs')), warning = identity)
+mtc = mtcars |>
+  within.data.frame(expr = {
+    vs = as.logical(vs)
+    am = as.logical(am)
+  })
+tryCatch(DemographicTable(mtc, groups = 'am', include = c('hp', 'drat')), warning = identity)
+tryCatch(DemographicTable(mtc, groups = 'cyl', include = c('vs')), warning = identity)
 ```
