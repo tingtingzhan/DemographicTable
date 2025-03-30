@@ -18,7 +18,7 @@ options(rmarkdown.html_vignette.check_title = FALSE)
 
 # Introduction
 
-This vignette of package **`DemographicTable`** ([CRAN](https://cran.r-project.org/package=DemographicTable), [Github](https://github.com/tingtingzhan/DemographicTable)) presents an idiot-proof interface to create a summary table of simple statistics, often known as demographic table.
+This vignette of package **`DemographicTable`** ([CRAN](https://cran.r-project.org/package=DemographicTable), [Github](https://github.com/tingtingzhan/DemographicTable)) presents an idiot-proof interface to create a summary table of simple statistics, often known as a demographic table.
 
 ## Note to Users
 
@@ -29,7 +29,7 @@ library(DemographicTable)
 set_flextable_defaults(font.size = 9)
 ```
 
-Users may remove the last pipe `|> as_flextable()` from all examples. The author of this package are forced to have it in this vignette to make package **`rmarkdown`** rendering work.
+Users may remove the last pipe `|> as_flextable()` from all examples. The author of this package are forced to have it in this vignette to make **`rmarkdown`** rendering work.
 
 
 # Demographic Table
@@ -51,14 +51,14 @@ tgr |>
 
 ## Summary by one `group`
 
-Color of each `group` is determined by `scales::pal_hue()`, which is the default color pallete used in package **`ggplot2`**.
+Color of each individual `group` is determined by `scales::pal_hue()`, which is the default color pallete used in package **`ggplot2`**.
 ```{r}
 tgr |>
   DemographicTable(groups = 'supp', include = c('len', 'dose')) |> 
   as_flextable()
 ```
 
-User may choose to hide the $p$-values with `compare = FALSE`.
+User may choose to hide the $p$-values with option `compare = FALSE`.
 
 ```{r}
 tgr |>
@@ -82,7 +82,8 @@ tb1 = CO2 |>
 tb2 = CO2 |>
   subset(subset = (Treatment == 'nonchilled')) |> 
   DemographicTable(groups = 'Type', include = c('conc', 'uptake'), data.name = 'CO2_nonchilled')
-c(tb1, tb2) |> as_flextable()
+c(tb1, tb2) |> 
+  as_flextable()
 ```
 
 # Exception Handling  
@@ -96,11 +97,7 @@ MASS::survey |>
 
 ## Use of `logical` values
 
-Use of `logical` values is discouraged, as this practice is proved confusing to scientists without a strong data background.  A warning message will be printed.
-
-```{r echo=FALSE}
-msg_logical() |> cat()
-```
+Using `logical` values is discouraged, as this practice is proved confusing to scientists without a strong data background.  A warning message will be printed.
 
 ```{r}
 mtc = mtcars |>
@@ -108,6 +105,25 @@ mtc = mtcars |>
     vs = as.logical(vs)
     am = as.logical(am)
   })
+```
+
+Using `logical` values in `group`.
+```{r}
 tryCatch(DemographicTable(mtc, groups = 'am', include = c('hp', 'drat')), warning = identity)
+```
+
+Using `logical` values in variables to be summarized
+```{r}
 tryCatch(DemographicTable(mtc, groups = 'cyl', include = c('vs')), warning = identity)
+```
+
+Suggested way of reporting
+```{r}
+mtcars |>
+  within.data.frame(expr = {
+    vs = ifelse(vs, yes = 'Straight', no = 'V-shaped')
+    am = ifelse(am, yes = 'manual', no = 'automatic')
+  }) |> 
+  DemographicTable(groups = 'am', include = c('vs', 'hp', 'drat'), data.name = 'mtcars') |>
+  as_flextable()
 ```
