@@ -15,8 +15,9 @@ Language: en-US
 Roxygen: list(markdown = TRUE)
 Depends: R (>= 4.4.0), flextable
 Suggests: 
-    knitr,
     MASS,
+    knitr,
+    quarto,
     rmarkdown
 RoxygenNote: 7.3.2
-VignetteBuilder: knitr
+VignetteBuilder: quarto
