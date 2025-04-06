@@ -24,9 +24,10 @@ This vignette of package **`DemographicTable`** ([CRAN](https://cran.r-project.o
 
 Examples in this vignette require that the `search` path has
 
-```{r setup}
+```{r}
 #| message: false
 library(DemographicTable)
+library(flextable)
 set_flextable_defaults(font.size = 9)
 ```
 
@@ -36,7 +37,7 @@ library(knitr) # for tables in this vignette
 #options(mc.cores = 1L) # for CRAN submission
 ```
 
-Users may remove the last pipe `|> as_flextable()` from all examples. The author of this package are forced to have it in this vignette to make **`quarto`** rendering work.
+Users may remove the last pipe `|> as_flextable()` from all examples. This is required in the vignette to make **`quarto`** rendering work.
 
 # Demographic Table
 
@@ -88,11 +89,16 @@ tgr |>
 ```{r}
 tb1 = CO2 |>
   DemographicTable(groups = 'Type', include = c('conc', 'uptake'))
+```
+
+```{r}
 tb2 = CO2 |>
   subset(subset = (Treatment == 'nonchilled')) |> 
   DemographicTable(groups = 'Type', include = c('conc', 'uptake'), data.name = 'CO2_nonchilled')
-c(tb1, tb2) |> 
-  as_flextable()
+```
+
+```{r}
+c(tb1, tb2) |> as_flextable()
 ```
 
 # Exception Handling

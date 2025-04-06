@@ -6,13 +6,13 @@ Date: 2025-04-06
 Description: To create demographic table with simple summary statistics, with optional comparison(s) over one or more groups.
 License: GPL-2
 Encoding: UTF-8
-Imports: cli, officer, scales
+Imports: cli, flextable, officer, scales
 Authors@R: c(person(given = "Tingting", family = "Zhan", role =
         c("aut", "cre"), email = c("tingtingzhan@gmail.com"), comment =
         c(ORCID = '0000-0001-9971-4844')))
 Language: en-US
 Roxygen: list(markdown = TRUE)
-Depends: R (>= 4.4.0), flextable
+Depends: R (>= 4.4.0)
 Suggests: 
     MASS,
     knitr,
