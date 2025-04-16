@@ -7,6 +7,8 @@
 #' 
 #' @param x an R object
 #' 
+#' @param fmt (optional) \link[base]{character} scalar, only for function [.sumstat.default], see function \link[base]{sprintf}
+#' 
 #' @param ... additional parameters, currently not in use
 #' 
 #' @returns 
@@ -14,29 +16,14 @@
 #' Function [.sumstat()] returns a \link[base]{character} scalar.
 #' 
 #' @examples 
-#' x = c(rpois(n = 20L, lambda = 2), NA_integer_)
-#' .sumstat(x)
-#' 
-#' # factor 
-#' x = state.region
-#' x[2L] = NA_integer_
-#' .sumstat(x)
-#' 
-#' # binary
-#' .sumstat(c(TRUE, FALSE, TRUE, NA))
-#' .sumstat(c(TRUE, FALSE, TRUE))
-#' .sumstat(c(FALSE, FALSE, NA))
-#' .sumstat(c(FALSE, FALSE, FALSE))
-#' .sumstat(c(NA, NA, NA))
-#' 
+#' MASS::survey$Wr.Hnd |> .sumstat()
+#' MASS::survey$M.I |> .sumstat()
 #' @keywords internal
 #' @name sumstat
 #' @export
-.sumstat <- function(x, fmt, ...) UseMethod('.sumstat')
+.sumstat <- function(x, fmt, ...) UseMethod(generic = '.sumstat')
 
 #' @rdname sumstat
-#' 
-#' @param fmt (optional) \link[base]{character} scalar, only for function [.sumstat.default], see function \link[base]{sprintf}
 #' 
 #' @details
 #' Function [.sumstat.default()] accepts all R objects of \link[base]{typeof} \link[base]{double} and \link[base]{integer}.

@@ -29,8 +29,10 @@
 #' Function [pval_shapiro()] returns a \link[base]{double} scalar.
 #' 
 #' @examples 
-#' pval_shapiro(rnorm(5))
-#' sapply(with(airquality, split(Ozone, f = Month)), FUN = pval_shapiro)
+#' rnorm(5) |> pval_shapiro()
+#' airquality |>
+#'  with(expr = split(Ozone, f = Month)) |>
+#'  sapply(FUN = pval_shapiro)
 #' @keywords internal
 #' @importFrom stats shapiro.test
 #' @export

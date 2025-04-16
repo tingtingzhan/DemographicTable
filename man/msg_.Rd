@@ -11,6 +11,6 @@ msg_logical()
 Various \link[base]{warning} and/or \link[base]{stop} Messages
 }
 \examples{
-cat(msg_logical())
+msg_logical() |> cat()
 }
 \keyword{internal}

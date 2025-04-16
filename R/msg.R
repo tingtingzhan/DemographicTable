@@ -3,7 +3,7 @@
 #' @title Various \link[base]{warning} and/or \link[base]{stop} Messages
 #' 
 #' @examples
-#' cat(msg_logical())
+#' msg_logical() |> cat()
 #' @keywords internal
 #' @name msg_
 #' @importFrom cli style_bold style_underline col_cyan col_yellow col_magenta

@@ -41,20 +41,7 @@ Statistics of \link[base]{mean}, \link[stats]{sd} and \link[base]{range} are rep
 If the normality assumption via \link[stats]{shapiro.test} is not satisfied, then \link[stats]{median} and \link[stats]{mad} are also reported.
 }
 \examples{
-x = c(rpois(n = 20L, lambda = 2), NA_integer_)
-.sumstat(x)
-
-# factor 
-x = state.region
-x[2L] = NA_integer_
-.sumstat(x)
-
-# binary
-.sumstat(c(TRUE, FALSE, TRUE, NA))
-.sumstat(c(TRUE, FALSE, TRUE))
-.sumstat(c(FALSE, FALSE, NA))
-.sumstat(c(FALSE, FALSE, FALSE))
-.sumstat(c(NA, NA, NA))
-
+MASS::survey$Wr.Hnd |> .sumstat()
+MASS::survey$M.I |> .sumstat()
 }
 \keyword{internal}
