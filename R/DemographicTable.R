@@ -339,8 +339,8 @@ pText_pairwise.htest <- function(x) {
 }
 
 
-# flextable.tzh::format_pval
-# tzh is not ready to publish \pkg{flextable.tzh}...
+# scales.tzh::label_pvalue_sym
+# tzh is not ready to publish \pkg{scales.tzh}...
 
 # @param pairwise \link[base]{integer} scalar, the maximum group number under which pairwise tests,
 # \link[stats]{pairwise.t.test} and \link[stats]{pairwise.wilcox.test}, are preferred.  Default value `3L`.
