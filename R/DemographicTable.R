@@ -98,13 +98,13 @@ DemographicTable <- function(
   }
   
   if (!missing(exclude_rx)) {
-    exclude <- unique.default(c(exclude, grep(pattern = exclude_rx, x = names(data), value = TRUE)))
+    exclude <- unique.default(c(exclude, grepv(pattern = exclude_rx, x = names(data))))
   }
   
   include <- if (missing(include_rx)) {
     if (missing(include)) names(data) else include
   } else {
-    ptn_include <- grep(pattern = include_rx, x = names(data), value = TRUE)
+    ptn_include <- grepv(pattern = include_rx, x = names(data))
     if (missing(include)) ptn_include else unique.default(c(include, ptn_include))
   }
   
