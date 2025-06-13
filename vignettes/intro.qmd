@@ -43,7 +43,7 @@ Users may remove the last pipe `|> as_flextable()` from all examples. This is re
 Data preparation
 
 ```{r}
-tgr = ToothGrowth |> 
+tgr = datasets::ToothGrowth |> 
   within.data.frame(expr = {
     dose = factor(dose) 
   })
