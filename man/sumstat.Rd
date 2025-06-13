@@ -41,7 +41,7 @@ Statistics of \link[base]{mean}, \link[stats]{sd} and \link[base]{range} are rep
 If the normality assumption via \link[stats]{shapiro.test} is not satisfied, then \link[stats]{median} and \link[stats]{mad} are also reported.
 }
 \examples{
-MASS::survey$Wr.Hnd |> .sumstat()
-MASS::survey$M.I |> .sumstat()
+airquality$Solar.R |> .sumstat()
+penguins$sex |> .sumstat()
 }
 \keyword{internal}

@@ -2,17 +2,17 @@ Package: DemographicTable
 Type: Package
 Title: Create Demographic Table
 Version: 0.2.2
-Date: 2025-04-28
-Description: To create demographic table with simple summary statistics, with optional comparison(s) over one or more groups.
+Description: To create demographic table with simple summary statistics,
+        with optional comparison(s) over one or more groups.
 License: GPL-2
 Encoding: UTF-8
-Authors@R: c(person(given = "Tingting", family = "Zhan", role =
-        c("aut", "cre"), email = c("tingtingzhan@gmail.com"), comment =
-        c(ORCID = '0000-0001-9971-4844')))
+Authors@R: c(person(given = "Tingting", family = "Zhan", role = c("aut",
+        "cre"), email = c("tingtingzhan@gmail.com"), comment = c(ORCID =
+        '0000-0001-9971-4844')))
 Language: en-US
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Depends: R (>= 4.5)
 Imports: cli, flextable, officer, scales
-Suggests: knitr, quarto, rmarkdown, MASS
+Suggests: knitr, quarto, rmarkdown
 VignetteBuilder: quarto

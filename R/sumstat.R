@@ -16,8 +16,8 @@
 #' Function [.sumstat()] returns a \link[base]{character} scalar.
 #' 
 #' @examples 
-#' MASS::survey$Wr.Hnd |> .sumstat()
-#' MASS::survey$M.I |> .sumstat()
+#' airquality$Solar.R |> .sumstat()
+#' penguins$sex |> .sumstat()
 #' @keywords internal
 #' @name sumstat
 #' @export
