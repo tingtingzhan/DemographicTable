@@ -28,7 +28,6 @@ Examples in this vignette require that the `search` path has
 #| message: false
 library(DemographicTable)
 library(flextable)
-set_flextable_defaults(font.size = 9)
 ```
 
 ```{r}
@@ -106,8 +105,8 @@ c(tb1, tb2) |> as_flextable()
 ## Missing value in `groups`
 
 ```{r}
-MASS::survey |>
-  DemographicTable(groups = c('M.I'), include = c('Pulse', 'Fold')) |>
+datasets::penguins |>
+  DemographicTable(groups = c('sex'), include = c('body_mass', 'species')) |>
   as_flextable()
 ```
 
@@ -116,7 +115,7 @@ MASS::survey |>
 Using `logical` values is discouraged, as this practice is proved confusing to scientists without a strong data background.
 
 ```{r}
-mtc = mtcars |>
+mtc = datasets::mtcars |>
   within.data.frame(expr = {
     vs_straight = as.logical(vs)
     am_manual = as.logical(am)
