@@ -132,12 +132,22 @@ as_flextable.sumtab <- function(x, ...) {
 
 
 # ?base::print
-# @export print.DemographicTable
+#' @title Print [DemographicTable]
+#' 
+#' @param x a [DemographicTable]
+#' 
+#' @param ... place holder for `S3` method dispatch
+#' 
+#' @returns 
+#' Function[print.DemographicTable()] does not have a returned value.
+#' 
+#' @keywords internal
+#' @export print.DemographicTable
 #' @export
 print.DemographicTable <- function(x, ...) {
   x |> 
     as_flextable.DemographicTable(...) |> 
-    print()
+    print() # ?flextable:::print.flextable()
 }
 
 # @export print.sumtab
