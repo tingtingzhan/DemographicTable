@@ -5,10 +5,11 @@
 #' 
 #' `vignette('intro', package = 'DemographicTable')`
 #' 
-#' 
+#' @import flextable
 '_PACKAGE'
 
 
+# we need to import ?flextable:::print.flextable
 
 
 

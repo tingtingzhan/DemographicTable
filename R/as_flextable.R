@@ -16,7 +16,7 @@
 #' End user may use function \link[flextable]{set_caption} to add a caption to the output demographic table.
 #'
 #' @keywords internal
-#' @importFrom flextable as_flextable flextable autofit bold color hline hline_bottom vline add_header_row add_footer_row merge_v merge_h
+#' @importFrom flextable as_flextable flextable init_flextable_defaults autofit bold color hline hline_bottom vline add_header_row add_footer_row merge_v merge_h
 #' @importFrom officer fp_border
 #' @importFrom scales pal_hue
 #' @export as_flextable.DemographicTable
@@ -67,19 +67,17 @@ as_flextable.DemographicTable <- function(x, ...) {
    
   nr <- dim(x0)[1L]
   
-  border_hard_ <- fp_border(width = 1.5, color = 'gray40')
-  # *looks* like default border used in ?flextable::flextable
-  # tzh does *not* know how to find out for sure, for now..
-  # ?flextable:::print.flextable
-  # ?flextable::htmltools_value
-  border_soft_ <- fp_border(width = .5, color = 'gray40')
-  
+  border_hard_ <- fp_border(
+    width = 2 * init_flextable_defaults()$border.width, # *looks* like default border width used in ?flextable::flextable
+    color = init_flextable_defaults()$border.color # '#666666', i.e., 'gray40'
+  )
+
   x1 |> 
     flextable() |> 
     autofit(part = 'all') |>
     hline(i = seq_len(nr - 1L)) |> # `-1`: do not overwrite default bottom
     color(j = v_hue, color = hue_color, part = 'all') |>
-    bold(j = v_hue, part = 'all') |>
+    #bold(j = v_hue, part = 'all') |> # removed 2025-07-31
     
     add_header_row(values = c(' ', group), colwidths = c(1, nc), top = TRUE) |>
     add_header_row(values = c(' ', dnm), colwidths = c(1, nc), top = TRUE) |>
@@ -90,7 +88,7 @@ as_flextable.DemographicTable <- function(x, ...) {
     
     # [vline]: must be after adding all 'footer' !
     vline(j = v_hard, border = border_hard_, part = 'all') |>
-    vline(j = v_soft, border = border_soft_, part = 'all') |>
+    vline(j = v_soft, part = 'all') |>
   
     merge_h(part = 'header') |>
     merge_v(part = 'header') |>
@@ -139,15 +137,16 @@ as_flextable.sumtab <- function(x, ...) {
 #' @param ... place holder for `S3` method dispatch
 #' 
 #' @returns 
-#' Function[print.DemographicTable()] does not have a returned value.
+#' Function [print.DemographicTable()] returns a \link[flextable]{flextable} \link[base]{invisible}-y.
 #' 
 #' @keywords internal
 #' @export print.DemographicTable
 #' @export
 print.DemographicTable <- function(x, ...) {
-  x |> 
-    as_flextable.DemographicTable(...) |> 
-    print() # ?flextable:::print.flextable()
+  z <- x |> 
+    as_flextable.DemographicTable(...) 
+  print(z) # ?flextable:::print.flextable()
+  return(invisible(z))
 }
 
 # @export print.sumtab

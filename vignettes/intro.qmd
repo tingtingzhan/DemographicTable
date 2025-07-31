@@ -27,7 +27,9 @@ Examples in this vignette require that the `search` path has
 ```{r}
 #| message: false
 library(DemographicTable)
+library(flextable)
 ```
+
 
 Users may remove the last pipe `|> as_flextable()` from all examples. This is required in the vignette to make **`quarto`** rendering work.
 
@@ -57,7 +59,7 @@ User may choose to hide the $p$-values with option `compare = FALSE`.
 
 ```{r}
 datasets::penguins |>
-  DemographicTable(groups = 'sex', include = c('species', 'bill_dep'), compare = FALSE) |> 
+  DemographicTable(groups = 'sex', include = c('species', 'bill_dep'), compare = FALSE) |>
   as_flextable()
 ```
 
@@ -69,7 +71,7 @@ datasets::penguins |>
   as_flextable()
 ```
 
-# Contatenate multiple `DemographicTable`s
+# Combine multiple `DemographicTable`s
 
 ```{r}
 tb1 = datasets::penguins |>
@@ -118,10 +120,10 @@ tryCatch(DemographicTable(mtc, groups = 'am_manual', include = c('drat', 'vs_str
 Instead of using `logical` variables
 
 ```{r}
+#| warning: false
 mtc |>
   DemographicTable(groups = 'am_manual', include = c('drat', 'vs_straight')) |>
-  as_flextable() |>
-  suppressWarnings()
+  as_flextable()
 ```
 
 We recommend using 2-`level` `factor`s.
