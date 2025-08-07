@@ -140,13 +140,17 @@ as_flextable.sumtab <- function(x, ...) {
 #' Function [print.DemographicTable()] returns a \link[flextable]{flextable} \link[base]{invisible}-y.
 #' 
 #' @keywords internal
+# @importFrom utils getS3method
 #' @export print.DemographicTable
 #' @export
 print.DemographicTable <- function(x, ...) {
   z <- x |> 
     as_flextable.DemographicTable(...) 
-  print(z) # ?flextable:::print.flextable()
-  return(invisible(z))
+  
+  z |> print() # ?flextable:::print.flextable() # does not work in vignette
+  # z |> getS3method(f = 'print', class = 'flextable')() # does not work in vignette
+  
+  return(invisible(z)) # does not work in vignette ..
 }
 
 # @export print.sumtab
@@ -154,5 +158,5 @@ print.DemographicTable <- function(x, ...) {
 print.sumtab <- function(x, ...) {
   x |>
     as_flextable.sumtab(...) |> 
-    print()
+    print() # ?flextable:::print.flextable()
 }

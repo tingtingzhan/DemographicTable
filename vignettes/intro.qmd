@@ -9,7 +9,11 @@ toc: true
 toc-location: left
 toc-depth: 4
 toc-title: ''
-editor: visual
+editor: source
+knitr:
+  opts_chunk: 
+    collapse: true
+    comment: "#>" 
 vignette: >
   %\VignetteIndexEntry{intro}
   %\VignetteEngine{quarto::html}
@@ -25,11 +29,9 @@ This vignette of package **`DemographicTable`** ([CRAN](https://cran.r-project.o
 Examples in this vignette require that the `search` path has
 
 ```{r}
-#| message: false
 library(DemographicTable)
 library(flextable)
 ```
-
 
 Users may remove the last pipe `|> as_flextable()` from all examples. This is required in the vignette to make **`quarto`** rendering work.
 
