@@ -4,10 +4,14 @@
 \alias{as_flextable.DemographicTable}
 \title{Convert \link{DemographicTable} to \link[flextable]{flextable}}
 \usage{
-\method{as_flextable}{DemographicTable}(x, ...)
+\method{as_flextable}{DemographicTable}(x, font.size = 9, ...)
 }
 \arguments{
 \item{x}{a \link{DemographicTable} object}
+
+\item{font.size}{\link[base]{numeric} scalar, see functions
+\link[flextable]{set_flextable_defaults} and
+\link[flextable]{init_flextable_defaults}}
 
 \item{...}{additional parameters, not currently in use}
 }

@@ -7,6 +7,10 @@
 #' 
 #' @param x a [DemographicTable] object
 #' 
+#' @param font.size \link[base]{numeric} scalar, see functions 
+#' \link[flextable]{set_flextable_defaults} and 
+#' \link[flextable]{init_flextable_defaults}
+#' 
 #' @param ... additional parameters, not currently in use 
 #' 
 #' @returns 
@@ -16,12 +20,12 @@
 #' End user may use function \link[flextable]{set_caption} to add a caption to the output demographic table.
 #'
 #' @keywords internal
-#' @importFrom flextable as_flextable flextable init_flextable_defaults autofit bold color hline hline_bottom vline add_header_row add_footer_row merge_v merge_h
+#' @importFrom flextable as_flextable flextable init_flextable_defaults set_flextable_defaults autofit bold color hline hline_bottom vline add_header_row add_footer_row merge_v merge_h
 #' @importFrom officer fp_border
 #' @importFrom scales pal_hue
 #' @export as_flextable.DemographicTable
 #' @export
-as_flextable.DemographicTable <- function(x, ...) {
+as_flextable.DemographicTable <- function(x, font.size = 9, ...) {
   
   rnm <- lapply(x, FUN = rownames)
   if (!all(duplicated(rnm)[-1L])) stop('rownames not all-same')
@@ -72,6 +76,10 @@ as_flextable.DemographicTable <- function(x, ...) {
     color = init_flextable_defaults()$border.color # '#666666', i.e., 'gray40'
   )
 
+  set_flextable_defaults(font.size = font.size)
+  
+  on.exit(init_flextable_defaults())
+  
   x1 |> 
     flextable() |> 
     autofit(part = 'all') |>
