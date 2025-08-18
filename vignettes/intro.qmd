@@ -170,3 +170,9 @@ mtcars |>
   DemographicTable(groups = 'am', include = c('drat', 'vs'), data.name = 'mtcars') |>
   as_flextable()
 ```
+
+
+# References
+
+::: {#refs}
+:::
