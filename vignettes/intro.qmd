@@ -13,7 +13,8 @@ editor: source
 knitr:
   opts_chunk: 
     collapse: true
-    comment: "#>" 
+    comment: "#" 
+bibliography: DemographicTable.bib
 vignette: >
   %\VignetteIndexEntry{intro}
   %\VignetteEngine{quarto::html}
@@ -24,7 +25,37 @@ vignette: >
 
 This vignette of package **`DemographicTable`** ([CRAN](https://cran.r-project.org/package=DemographicTable), [Github](https://github.com/tingtingzhan/DemographicTable)) presents an idiot-proof interface to create a summary table of simple statistics, often known as a demographic table.
 
-## Note to Users
+Package **`DemographicTable`** `Imports` packages
+
+-   **`cli`** [@cli, v`r packageVersion('cli')`], for attractive command line interfaces
+-   `r '\U1f5dd'` **`flextable`** [@flextable, v`r packageVersion('flextable')`] and **`officer`** [@officer, v`r packageVersion('officer')`], key dependencies, for flexible table
+-   **`scales`** [@scales, v`r packageVersion('scales')`], for colour pallete
+
+
+## Prerequisite
+
+Packages **`DemographicTable`** requires R version 4.5.0 (released 2025-04-11) or higher ([macOS](https://cran.r-project.org/bin/macosx/), [Windows](https://cran.r-project.org/bin/windows/base/)). An Integrated Development Environment (IDE), e.g., [RStudio](https://posit.co/download/rstudio-desktop/) or [Positron](https://positron.posit.co/download.html), is not required, but highly recommended. This vignette is created under `r R.version$version.string` using packages **`knitr`** [@knitr, v`r packageVersion('knitr')`], **`quarto`** [@quarto, v`r packageVersion('quarto')` with [Quarto](https://quarto.org/docs/get-started/) v`r quarto::quarto_version()`] and **`rmarkdown`** [@rmarkdown, v`r packageVersion('rmarkdown')`].
+
+```{r}
+#| code-fold: true
+#| code-summary: "Environment on author's computer"
+Sys.info()[c('sysname', 'release', 'machine')]
+R.version
+```
+
+Experimental (and maybe unstable) features are released *extremely frequently* to [Github](https://github.com/tingtingzhan/maxEff). Stable releases to [CRAN](https://CRAN.R-project.org/package=DemographicTable) are typically updated every 2 to 3 months.
+
+```{r}
+#| eval: false
+remotes::install_github('tingtingzhan/DemographicTable')
+```
+
+```{r}
+#| eval: false
+utils::install.packages('DemographicTable')
+```
+
+## Getting Started
 
 Examples in this vignette require that the `search` path has
 

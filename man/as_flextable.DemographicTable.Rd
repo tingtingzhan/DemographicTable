@@ -4,7 +4,7 @@
 \alias{as_flextable.DemographicTable}
 \title{Convert \link{DemographicTable} to \link[flextable]{flextable}}
 \usage{
-\method{as_flextable}{DemographicTable}(x, font.size = 9, ...)
+\method{as_flextable}{DemographicTable}(x, font.size = 10, ...)
 }
 \arguments{
 \item{x}{a \link{DemographicTable} object}

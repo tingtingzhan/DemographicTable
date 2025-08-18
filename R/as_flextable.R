@@ -25,7 +25,7 @@
 #' @importFrom scales pal_hue
 #' @export as_flextable.DemographicTable
 #' @export
-as_flextable.DemographicTable <- function(x, font.size = 9, ...) {
+as_flextable.DemographicTable <- function(x, font.size = 10, ...) {
   
   rnm <- lapply(x, FUN = rownames)
   if (!all(duplicated(rnm)[-1L])) stop('rownames not all-same')
