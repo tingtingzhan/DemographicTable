@@ -1,6 +1,7 @@
 ---
 title: "Demographic Table"
 author: Tingting Zhan
+date: "`r Sys.Date()`"
 format: 
   html:
     page-layout: full
