@@ -5,6 +5,7 @@ format:
   html:
     page-layout: full
     html-math-method: katex
+number-sections: true
 toc: true
 toc-location: left
 toc-depth: 4
