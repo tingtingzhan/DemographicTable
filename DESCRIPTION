@@ -11,7 +11,7 @@ Authors@R: c(person(given = "Tingting", family = "Zhan", role = c("aut",
         '0000-0001-9971-4844')))
 Language: en-US
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Depends: R (>= 4.5)
 Imports: cli, flextable, officer, scales
 Suggests: knitr, quarto, rmarkdown

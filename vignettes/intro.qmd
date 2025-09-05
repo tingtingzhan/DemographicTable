@@ -1,7 +1,7 @@
 ---
 title: "Demographic Table"
 author: Tingting Zhan
-date: "`r Sys.Date()`"
+date: today
 format: 
   html:
     page-layout: full
@@ -45,7 +45,7 @@ Sys.info()[c('sysname', 'release', 'machine')]
 R.version
 ```
 
-Experimental (and maybe unstable) features are released *extremely frequently* to [Github](https://github.com/tingtingzhan/maxEff). Stable releases to [CRAN](https://CRAN.R-project.org/package=DemographicTable) are typically updated every 2 to 3 months.
+Experimental (and maybe unstable) features are released *extremely frequently* to [Github](https://github.com/tingtingzhan/DemographicTable). Stable releases to [CRAN](https://CRAN.R-project.org/package=DemographicTable) are typically updated every 2 to 3 months.
 
 ```{r}
 #| eval: false

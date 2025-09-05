@@ -20,7 +20,7 @@
 #' End user may use function \link[flextable]{set_caption} to add a caption to the output demographic table.
 #'
 #' @keywords internal
-#' @importFrom flextable as_flextable flextable init_flextable_defaults set_flextable_defaults autofit bold color hline hline_bottom vline add_header_row add_footer_row merge_v merge_h
+#' @importFrom flextable as_flextable flextable init_flextable_defaults set_flextable_defaults autofit bold color border_inner hline hline_bottom vline add_header_row add_footer_row merge_v merge_h
 #' @importFrom officer fp_border
 #' @importFrom scales pal_hue
 #' @export as_flextable.DemographicTable
@@ -53,7 +53,7 @@ as_flextable.DemographicTable <- function(x, font.size = 10, ...) {
   names(x1) <- xnm
   
   v_hard <- c(1L, 1L + cumsum(nc[-length(nc)]))
-  v_soft <- setdiff(seq_len(sum(nc)), v_hard)
+  #v_soft <- setdiff(seq_len(sum(nc)), v_hard)
   v1_hue <- nc |>
     seq_along() |>
     lapply(FUN = \(i) {
@@ -71,6 +71,7 @@ as_flextable.DemographicTable <- function(x, font.size = 10, ...) {
    
   nr <- dim(x0)[1L]
   
+  # hard border
   border_hard_ <- fp_border(
     width = 2 * init_flextable_defaults()$border.width, # *looks* like default border width used in ?flextable::flextable
     color = init_flextable_defaults()$border.color # '#666666', i.e., 'gray40'
@@ -83,7 +84,7 @@ as_flextable.DemographicTable <- function(x, font.size = 10, ...) {
   x1 |> 
     flextable() |> 
     autofit(part = 'all') |>
-    hline(i = seq_len(nr - 1L)) |> # `-1`: do not overwrite default bottom
+    border_inner(part = 'all') |> 
     color(j = v_hue, color = hue_color, part = 'all') |>
     #bold(j = v_hue, part = 'all') |> # removed 2025-07-31
     
@@ -96,7 +97,6 @@ as_flextable.DemographicTable <- function(x, font.size = 10, ...) {
     
     # [vline]: must be after adding all 'footer' !
     vline(j = v_hard, border = border_hard_, part = 'all') |>
-    vline(j = v_soft, part = 'all') |>
   
     merge_h(part = 'header') |>
     merge_v(part = 'header') |>
@@ -111,7 +111,7 @@ as_flextable.DemographicTable <- function(x, font.size = 10, ...) {
 
 
 
-#' @importFrom flextable autofit flextable hline vline align add_header_row merge_v
+#' @importFrom flextable autofit flextable border_inner align add_header_row merge_v
 # @export as_flextable.sumtab
 #' @export
 as_flextable.sumtab <- function(x, ...) {
@@ -123,8 +123,7 @@ as_flextable.sumtab <- function(x, ...) {
   ret0 <- x1 |>
     flextable() |> 
     autofit(part = 'all') |>
-    hline(i = seq_len(dim(x)[1L] - 1L)) |>
-    vline(j = 1L)
+    border_inner()
   
   group <- attr(x, which = 'group', exact = TRUE)
   if (!nzchar(group)) return(ret0)
