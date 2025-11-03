@@ -30,7 +30,7 @@ This vignette of package **`DemographicTable`** ([CRAN](https://cran.r-project.o
 Package **`DemographicTable`** `Imports` packages
 
 -   **`cli`** [@cli, v`r packageVersion('cli')`], for attractive command line interfaces
--   `r '\U1f5dd'` **`flextable`** [@flextable, v`r packageVersion('flextable')`] and **`officer`** [@officer, v`r packageVersion('officer')`], key dependencies, for flexible table
+-   **`flextable`** [@flextable, v`r packageVersion('flextable')`] and **`officer`** [@officer, v`r packageVersion('officer')`], for flexible table
 -   **`scales`** [@scales, v`r packageVersion('scales')`], for colour pallete
 
 
@@ -76,7 +76,7 @@ Data example `penguins` from package **`datasets`**
 
 ```{r}
 datasets::penguins |>
-  DemographicTable(include = c('species', 'island', 'bill_len')) |> 
+  DemographicTable(include = c('species', 'island', 'bill_len')) |>
   as_flextable()
 ```
 
