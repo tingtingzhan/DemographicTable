@@ -87,25 +87,16 @@ DemographicTable <- function(
 
   
   ############################################
-  ## Inspect in detail
+  ## Inspect variables (on the rows)
   ############################################
   
-  # without `by`
-  # .. copy tzh::class1List
-  cl1 <- vapply(data, FUN = \(x) class(x)[1L], FUN.VALUE = '', USE.NAMES = TRUE)
+  cl1 <- data |>
+    vapply(FUN = \(x) class(x)[1L], FUN.VALUE = '', USE.NAMES = TRUE)
   vlst <- split.default(names(cl1), f = factor(cl1))
   
   if (length(vlst$matrix)) {
-    mtype <- vapply(data[vlst$matrix], FUN = typeof, FUN.VALUE = '')
-    if (any(id_double <- (mtype == 'double'))) {
-      vlst$difftime <- c(vlst$difftime, vlst$matrix[id_double][id_difftime <- vapply(data[vlst$matrix[id_double]], FUN = inherits, what = 'difftime', FUN.VALUE = NA)])
-      vlst$numeric <- c(vlst$numeric, vlst$matrix[id_double][!id_difftime])
-    }
-    # c('factor', 'matrix') is in `vlst$factor` already...
-    if (any(id_bool <- (mtype == 'logical'))) {
-      vlst$logical <- c(vlst$logical, vlst$matrix[id_bool])
-    }
-    #if (any(!id_bool & !id_double)) stop('uncovered matrix column') # allow, just ignore these cases
+    .Deprecated(msg = 'no longer support `matrix`-column')
+    vlst$matrix <- NULL
   }
   
   ######################
