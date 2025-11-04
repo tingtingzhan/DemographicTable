@@ -4,40 +4,18 @@
 \alias{DemographicTable}
 \title{Create Demographic Table}
 \usage{
-DemographicTable(
-  data,
-  data.name = substitute(data),
-  by = NULL,
-  robust = TRUE,
-  overall = TRUE,
-  compare = TRUE,
-  pairwise = 3L,
-  ...
-)
+DemographicTable(data, data.name = substitute(data), by = NULL, ...)
 }
 \arguments{
 \item{data}{a \link[base]{data.frame}}
 
-\item{data.name}{\link[base]{character} scalar, or the argument \link[base]{call} of \code{data}.
+\item{data.name}{\link[base]{character} scalar,
+or the argument \link[base]{call} of \code{data}.
 A user-friendly name of the input \code{data}.}
 
 \item{by}{one-sided \link[stats]{formula},
 the name(s) of sub-group(s) for which the summary statistics are provided.
 Default \code{NULL} indicating no sub-groups.}
-
-\item{robust}{\link[base]{logical} scalar.
-If \code{TRUE} (default), use non-parametric methods for
-non-normally distributed \link[base]{numeric} variables.}
-
-\item{overall}{\link[base]{logical} scalar.
-If \code{TRUE} (default), a column of overall summary statistics will be provided.}
-
-\item{compare}{\link[base]{logical} scalar.
-If \code{TRUE} (default), comparisons between group(s) will be made.}
-
-\item{pairwise}{\link[base]{integer} scalar,
-minimum number of groups where pairwise comparisons need to be performed.
-Default \code{3L}.}
 
 \item{...}{additional parameters, currently not in use}
 }
@@ -46,7 +24,8 @@ Function \code{\link[=DemographicTable]{DemographicTable()}} returns an object o
 which is a \link[stats]{listof} \code{'sumtab'} elements.
 }
 \description{
-Create a demographic table with simple summary statistics, with optional comparison(s) over one or more groups.
+To create a demographic table with simple summary statistics,
+with optional comparison(s) over one or more groups.
 }
 \details{
 A demographic table with simple summary statistics, with optional comparison(s) over one or more groups, is created.

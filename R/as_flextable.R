@@ -20,31 +20,26 @@
 #' End user may use function \link[flextable]{set_caption} to add a caption to the output demographic table.
 #'
 #' @keywords internal
-#' @importFrom flextable as_flextable flextable init_flextable_defaults set_flextable_defaults autofit bold color border_inner hline hline_bottom vline add_header_row add_footer_row merge_v merge_h
 #' @importFrom officer fp_border
 #' @importFrom scales pal_hue
 #' @export as_flextable.DemographicTable
 #' @export
 as_flextable.DemographicTable <- function(x, font.size = 10, ...) {
   
-  rnm <- lapply(x, FUN = rownames)
+  rnm <- x |>
+    lapply(FUN = rownames)
   if (!all(duplicated(rnm)[-1L])) stop('rownames not all-same')
   
-  x0 <- do.call(cbind, args = x)
+  dnm <- x |>
+    vapply(FUN = attr, which = 'data.name', exact = TRUE, FUN.VALUE = '')
+  group <- x |>  
+    vapply(FUN = attr, which = 'group', exact = TRUE, FUN.VALUE = '')
+  compare <- x |>
+    vapply(FUN = attr, which = 'compare', exact = TRUE, FUN.VALUE = NA)
+  nc <- x |>
+    vapply(FUN = ncol, FUN.VALUE = NA_integer_)
   
-  group. <- x |>
-    lapply(FUN = attr, which = 'group', exact = TRUE) |>
-    unlist(use.names = TRUE) # *not* ?base::vapply (which does not retain names)
-  group <- names(group.) # `names('')` returns NULL
-  if (!length(group)) group <- ''
-  if (any(z_grp <- !nzchar(group))) {
-    group[z_grp] <- vapply(x[z_grp], FUN = colnames, FUN.VALUE = '')
-  }
-  
-  compare <- vapply(x, FUN = attr, which = 'compare', exact = TRUE, FUN.VALUE = NA)
-  nc <- vapply(x, FUN = ncol, FUN.VALUE = NA_integer_)
-  dnm <- vapply(x, FUN = attr, which = 'data.name', exact = TRUE, FUN.VALUE = '')
-  
+  x0 <- do.call(what = cbind, args = x)
   x1 <- data.frame(' ' = dimnames(x0)[[1L]], unclass(x0), row.names = NULL, check.names = FALSE, fix.empty.names = FALSE, stringsAsFactors = FALSE)
   xnm <- names(x1)
   if (sum(sig_id <- (xnm == 'Signif')) > 1L) {
@@ -71,12 +66,6 @@ as_flextable.DemographicTable <- function(x, font.size = 10, ...) {
    
   nr <- dim(x0)[1L]
   
-  # hard border
-  border_hard_ <- fp_border(
-    width = 2 * init_flextable_defaults()$border.width, # *looks* like default border width used in ?flextable::flextable
-    color = init_flextable_defaults()$border.color # '#666666', i.e., 'gray40'
-  )
-
   set_flextable_defaults(font.size = font.size)
   
   on.exit(init_flextable_defaults())
@@ -91,12 +80,12 @@ as_flextable.DemographicTable <- function(x, font.size = 10, ...) {
     add_header_row(values = c(' ', group), colwidths = c(1, nc), top = TRUE) |>
     add_header_row(values = c(' ', dnm), colwidths = c(1, nc), top = TRUE) |>
     add_footer_row(values = c(' ', group), colwidths = c(1, nc), top = FALSE) |>
-    hline_bottom(border = border_hard_, part = 'all') |> # to make sure each row of footer has a bottom
+    hline_bottom(border = .border_hard(), part = 'all') |> # to make sure each row of footer has a bottom
     add_footer_row(values = c(' ', dnm), colwidths = c(1, nc), top = FALSE) |>
-    hline_bottom(border = border_hard_, part = 'all') |>
+    hline_bottom(border = .border_hard(), part = 'all') |>
     
     # [vline]: must be after adding all 'footer' !
-    vline(j = v_hard, border = border_hard_, part = 'all') |>
+    vline(j = v_hard, border = .border_hard(), part = 'all') |>
   
     merge_h(part = 'header') |>
     merge_v(part = 'header') |>
@@ -111,28 +100,58 @@ as_flextable.DemographicTable <- function(x, font.size = 10, ...) {
 
 
 
-#' @importFrom flextable autofit flextable border_inner align add_header_row merge_v
+
+
+
 # @export as_flextable.sumtab
 #' @export
 as_flextable.sumtab <- function(x, ...) {
   
-  x1 <- data.frame(' ' = dimnames(x)[[1L]], unclass(x), row.names = NULL, check.names = FALSE, fix.empty.names = FALSE, stringsAsFactors = FALSE)
+  x1 <- data.frame(
+    ' ' = dimnames(x)[[1L]], 
+    unclass(x), 
+    row.names = NULL, check.names = FALSE, fix.empty.names = FALSE, stringsAsFactors = FALSE
+  )
   dnm <- attr(x, which = 'data.name', exact = TRUE)
   names(x1)[1L] <- dnm
   
   ret0 <- x1 |>
     flextable() |> 
     autofit(part = 'all') |>
-    border_inner()
+    border_inner(part = 'all') |>
+    vline(j = 1L, border = .border_hard(), part = 'all')
   
   group <- attr(x, which = 'group', exact = TRUE)
   if (!nzchar(group)) return(ret0)
    
+  nc <- ncol(x)
+  compare <- x |>
+    attr(which = 'compare', exact = TRUE)
+  ncolor <- if (compare) nc - 1L else nc
   ret0 |> 
-    add_header_row(values = c(dnm, group), colwidths = c(1, ncol(x)), top = TRUE) |>
+    color(j = seq_len(ncolor) + 1L, color = pal_hue()(n = ncolor), part = 'all') |>
+    add_header_row(values = c(dnm, group), colwidths = c(1, nc), top = TRUE) |>
+    color(i = 1, color = 'black', part = 'header') |>
     align(i = 1L, j = NULL, align = 'center', part = 'header') |>
     merge_v(part = 'header')
+  
 }
+
+
+
+
+
+# hard border
+.border_hard <- function() {
+  fp_border(
+    width = 2 * init_flextable_defaults()$border.width, # *looks* like default border width used in ?flextable::flextable
+    color = init_flextable_defaults()$border.color # '#666666', i.e., 'gray40'
+  )
+}
+
+
+
+
 
 
 

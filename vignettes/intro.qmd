@@ -109,19 +109,42 @@ datasets::penguins[c('sex', 'island', 'species', 'bill_dep')] |>
 # Combine multiple `DemographicTable`s
 
 ```{r}
-tb1 = datasets::penguins |>
+male = datasets::penguins |>
   subset(subset = (sex == 'male'), select = c('island', 'species', 'bill_dep')) |>
   DemographicTable(by = ~ island, data.name = 'Male Penguins', compare = FALSE)
 ```
 
 ```{r}
-tb2 = datasets::penguins |>
+female = datasets::penguins |>
   subset(subset = (sex == 'female'), select = c('island', 'species', 'bill_dep')) |>
   DemographicTable(by = ~ island, data.name = 'Female Penguins', compare = FALSE)
 ```
 
 ```{r}
-c(tb1, tb2) |> as_flextable()
+c(male, female) |> 
+  as_flextable()
+```
+
+# Advance Usage
+
+Remove the "overall" column.
+
+```{r}
+tb = datasets::penguins[c('sex', 'island', 'species', 'bill_dep')] |>
+  DemographicTable(by = ~ sex + island, data.name = 'datasets::penguins', compare = FALSE)
+tb[-1L] |> 
+  as_flextable()
+```
+
+
+```{r}
+c(male, female)[2:4] |> 
+  as_flextable()
+```
+
+```{r}
+c(male, female)[c(2L, 4L)] |> 
+  as_flextable()
 ```
 
 # Exception Handling

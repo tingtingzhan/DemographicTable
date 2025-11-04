@@ -2,30 +2,19 @@
 
 #' @title Create Demographic Table
 #' 
-#' @description Create a demographic table with simple summary statistics, with optional comparison(s) over one or more groups.
+#' @description 
+#' To create a demographic table with simple summary statistics, 
+#' with optional comparison(s) over one or more groups.
 #' 
 #' @param data a \link[base]{data.frame}
 #' 
-#' @param data.name \link[base]{character} scalar, or the argument \link[base]{call} of `data`.  
+#' @param data.name \link[base]{character} scalar, 
+#' or the argument \link[base]{call} of `data`.  
 #' A user-friendly name of the input `data`.
 #' 
 #' @param by one-sided \link[stats]{formula}, 
 #' the name(s) of sub-group(s) for which the summary statistics are provided.
 #' Default `NULL` indicating no sub-groups.
-#' 
-#' @param robust \link[base]{logical} scalar. 
-#' If `TRUE` (default), use non-parametric methods for 
-#' non-normally distributed \link[base]{numeric} variables.
-#' 
-#' @param overall \link[base]{logical} scalar.
-#' If `TRUE` (default), a column of overall summary statistics will be provided.
-#' 
-#' @param compare \link[base]{logical} scalar.
-#' If `TRUE` (default), comparisons between group(s) will be made.
-#' 
-#' @param pairwise \link[base]{integer} scalar,
-#' minimum number of groups where pairwise comparisons need to be performed.
-#' Default `3L`.
 #' 
 #' @param ... additional parameters, currently not in use
 #' 
@@ -53,10 +42,6 @@
 DemographicTable <- function(
     data, data.name = substitute(data), 
     by = NULL,
-    robust = TRUE,
-    overall = TRUE, 
-    compare = TRUE,
-    pairwise = 3L,
     ...
 ) {
   
@@ -127,19 +112,20 @@ DemographicTable <- function(
   # Done! use `data`, `vlst` and `f` below
   ######################
   
-  ret0 <- if (overall) list(.sumtab(data, data.name = data.name, vlst = vlst, ...)) # else NULL      
-  ret1 <- if (length(f)) {
-    f |>
-      seq_along() |>
-      lapply(FUN = \(i) {
-        z <- .sumtab_by(data = data, data.name = data.name, f = f[[i]], vlst = vlst, compare = compare, robust = robust, pairwise = pairwise, ...)
-        attr(z, which = 'group') <- setNames(nm = names(f)[i]) # downstream compatibility
-        return(z)
-      })
-  }
-  ret <- c(ret0, ret1)
-  if (!length(ret)) stop('wont happen')
+  # 'overall' column
+  ret0 <- .sumtab(data, vlst = vlst, ...)
+  attr(ret0, which = 'data.name') <- data.name
   
+  ret1 <- if (length(f)) {
+    mapply(FUN = \(f, nm) {
+      z <- .sumtab_by(data = data, f = f, vlst = vlst, ...)
+      attr(z, which = 'group') <- nm
+      attr(z, which = 'data.name') <- data.name
+      return(z)
+    }, f = f, nm = names(f), SIMPLIFY = FALSE, USE.NAMES = FALSE)
+  } # else NULL
+  
+  ret <- c(list(ret0), ret1)
   class(ret) <- c('DemographicTable', 'listof')
   return(ret)
   
@@ -158,7 +144,7 @@ DemographicTable <- function(
 ## work horse
 ##################
 
-.sumtab <- function(data, data.name, vlst, fmt = '%.1f', ...) {# useNA = c('no', 'always'), 
+.sumtab <- function(data, vlst, fmt = '%.1f', ...) {# useNA = c('no', 'always'), 
   
   out_num <- if (length(.num <- c(vlst$integer, vlst$numeric))) {
     names(.num) <- .num
@@ -191,27 +177,24 @@ DemographicTable <- function(
   } #else NULL
 
   ret0 <- c(out_num, out_difft, out_bool, out_factor)
-  ret <- array(ret0, dim = c(length(ret0), 1L), dimnames = list(
-    names(ret0), 
-    paste0('n=', .row_names_info(data, type = 2L))
-  ))
-  attr(ret, which = 'data.name') <- data.name
-  attr(ret, which = 'group') <- '' # important
+  nm <- paste0('n=', .row_names_info(data, type = 2L))
+  ret <- array(ret0, dim = c(length(ret0), 1L), dimnames = list(names(ret0), nm))
+  attr(ret, which = 'group') <- nm
   attr(ret, which = 'compare') <- FALSE
-  #class(ret) <- c('sumtab', class(ret))
-  class(ret) <- 'sumtab'
+  class(ret) <- c('sumtab', class(ret)) |>
+    unique.default()
   return(ret)
 }
 
 
 
+# @param robust \link[base]{logical} scalar. If `TRUE` (default), use non-parametric methods for non-normally distributed \link[base]{numeric} variables.
+# @param pairwise \link[base]{integer} scalar, minimum number of groups where pairwise comparisons need to be performed.  Default `3L`.
+# @param compare \link[base]{logical} scalar. If `TRUE` (default), comparisons between group(s) will be made.
 
-#.sumtab_by <- function(data, data.name, vlst, group, robust = TRUE, compare = TRUE, pairwise = 3L, ...) { # SMD = FALSE,
+
 .sumtab_by <- function(data, data.name, vlst, f, robust = TRUE, compare = TRUE, pairwise = 3L, ...) { # SMD = FALSE, 
-  #if (!is.character(group) || length(group) != 1L || anyNA(group) || !nzchar(group)) stop('`group` must be len-1 character')
-  
-  #f <- factor(data[[group]])
-  
+
   ######## parameter `f` is a 'factor' !!!
   
   gidx <- split.default(seq_along(f), f = f) # missingness in `f` dropped
@@ -219,7 +202,7 @@ DemographicTable <- function(
   
   ret <- gidx |>
     lapply(FUN = \(id) { # (id = gidx[[1L]])
-      .sumtab(data[id, , drop = FALSE], data.name = '', vlst = vlst, ...)
+      .sumtab(data[id, , drop = FALSE], vlst = vlst, ...) # data.name = '', 
     }) |>
     do.call(what = cbind)
   colnames(ret) <- sprintf(fmt = '%s\nn=%d (%.1f%%)', names(gidx), gN, 1e2*gN/length(f)) # before removing NA!!!
@@ -227,7 +210,6 @@ DemographicTable <- function(
   # removing single 'group' for p-values
   txt_g1 <- if (any(g1 <- (gN == 1L))) {
     gidx <- gidx[!g1]
-    #paste0('(', sum(g1), ' ', sQuote(group), ' level(s) of\n single obs omitted)')
     paste0('(', sum(g1), ' level(s) of\n single obs omitted)')
   } # else NULL
   
@@ -245,9 +227,9 @@ DemographicTable <- function(
   } else ret_compare <- NULL
   
   ret <- cbind(ret, ret_compare)
-  attr(ret, which = 'data.name') <- data.name
   attr(ret, which = 'compare') <- compare
-  class(ret) <- 'sumtab'
+  class(ret) <- c('sumtab', class(ret)) |>
+    unique.default()
   return(ret)
 
 }
