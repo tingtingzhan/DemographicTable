@@ -1,22 +1,31 @@
 
 
-#' @title Various \link[base]{warning} and/or \link[base]{stop} Messages
+#' @title  \link[base]{warning} Messages on the use of \link[base]{logical} variable
 #' 
 #' @examples
-#' msg_logical() |> cat()
+#' msg_logical()
+#' 
 #' @keywords internal
-#' @name msg_
-#' @importFrom cli style_bold style_underline col_cyan col_yellow col_magenta
 #' @export
 msg_logical <- function() {
-  sprintf(fmt = '\nSome scientists do not understand %s value (e.g., %s being %s/%s)\nConsider using 2-level %s (e.g., %s being %s/%s)',
-          'logical' |> style_underline() |> style_bold(),
-          'arm_intervention' |> col_cyan() |> style_bold(),
-          'TRUE' |> col_yellow(), 'FALSE' |> col_yellow(),
-          'factor' |> style_underline() |> style_bold(),
-          'arm' |> col_magenta() |> style_bold(),
-          'intervention' |> col_yellow(), 'control' |> col_yellow())
+  
+  sprintf(
+    fmt = 'Some scientists do not understand %s value, e.g., %s being %s/%s.',
+    sprintf(fmt = '{.fun %s::%s}', 'base', 'logical'),
+    'arm_intervention' |> col_cyan() |> style_bold() |> style_italic(),
+    'TRUE' |> col_red(), 'FALSE' |> col_blue()
+  ) |>
+    cli_text() |> # will ignore '\n'
+    message(appendLF = FALSE) # seems needed after ?cli::cli_text
+  
+  sprintf(
+    fmt = 'Consider using 2-level %s, e.g., %s being %s/%s.',
+    sprintf(fmt = '{.fun %s::%s}', 'base', 'factor'),
+    'arm' |> col_magenta() |> style_bold() |> style_italic(),
+    'intervention' |> col_yellow(), 'control' |> col_green()
+  ) |>
+    cli_text() |> # will ignore '\n'
+    message(appendLF = FALSE) # seems needed after ?cli::cli_text
+  
 }
-
-# add a `\n` upfront to make sure the error message starts on a new line
 

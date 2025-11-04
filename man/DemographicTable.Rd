@@ -8,10 +8,6 @@ DemographicTable(
   data,
   data.name = substitute(data),
   groups = NULL,
-  exclude = NULL,
-  exclude_rx,
-  include,
-  include_rx,
   robust = TRUE,
   overall = TRUE,
   compare = TRUE,
@@ -28,20 +24,6 @@ A user-friendly name of the input \code{data}.}
 \item{groups}{\link[base]{character} scalar or \link[base]{vector},
 the name(s) of sub-group(s) for which the summary statistics are provided.
 Default \code{NULL} indicating no sub-groups.}
-
-\item{exclude}{\link[base]{character} \link[base]{vector},
-the name(s) of variable(s) to be excluded.
-Default \code{NULL} indicating no variable are excluded.}
-
-\item{exclude_rx}{(optional) \link[base]{regex},
-pattern of the names of the variable(s) to be excluded.}
-
-\item{include}{\link[base]{character} \link[base]{vector},
-the name(s) of variable(s) to be included.
-Default \code{names(data)} indicating all variables are included.}
-
-\item{include_rx}{(optional) \link[base]{regex},
-pattern of the names of the variable(s) to be included.}
 
 \item{robust}{\link[base]{logical} scalar.
 If \code{TRUE} (default), use non-parametric methods for

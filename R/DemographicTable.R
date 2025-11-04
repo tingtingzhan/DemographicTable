@@ -13,20 +13,6 @@
 #' the name(s) of sub-group(s) for which the summary statistics are provided.
 #' Default `NULL` indicating no sub-groups.
 #' 
-#' @param exclude \link[base]{character} \link[base]{vector}, 
-#' the name(s) of variable(s) to be excluded.  
-#' Default `NULL` indicating no variable are excluded.
-#' 
-#' @param exclude_rx (optional) \link[base]{regex}, 
-#' pattern of the names of the variable(s) to be excluded. 
-#' 
-#' @param include \link[base]{character} \link[base]{vector}, 
-#' the name(s) of variable(s) to be included.
-#' Default `names(data)` indicating all variables are included.
-#' 
-#' @param include_rx (optional) \link[base]{regex}, 
-#' pattern of the names of the variable(s) to be included.
-#' 
 #' @param robust \link[base]{logical} scalar. 
 #' If `TRUE` (default), use non-parametric methods for 
 #' non-normally distributed \link[base]{numeric} variables.
@@ -68,8 +54,6 @@
 DemographicTable <- function(
     data, data.name = substitute(data), 
     groups = NULL,
-    exclude = NULL, exclude_rx, 
-    include, include_rx, 
     robust = TRUE,
     overall = TRUE, 
     compare = TRUE,
@@ -94,34 +78,10 @@ DemographicTable <- function(
     if (any(id <- vapply(data[groups], FUN = is.matrix, FUN.VALUE = NA, USE.NAMES = FALSE))) stop(sQuote(groups[id]), ' is/are matrix column(s).')
     if ((data[groups]) |> 
         vapply(FUN = is.logical, FUN.VALUE = NA) |>
-        any()) warning(msg_logical())
+        any()) msg_logical()
   }
   
-  if (!missing(exclude_rx)) {
-    exclude <- unique.default(c(exclude, grepv(pattern = exclude_rx, x = names(data))))
-  }
-  
-  include <- if (missing(include_rx)) {
-    if (missing(include)) names(data) else include
-  } else {
-    ptn_include <- grepv(pattern = include_rx, x = names(data))
-    if (missing(include)) ptn_include else unique.default(c(include, ptn_include))
-  }
-  
-  include <- setdiff(x = include, y = exclude)
-  if (!length(include)) stop('length-0 `include`: Nothing on the rows of demographic table')
-  
-  rm(exclude)
-  
-  if (any(id <- is.na(match(include, table = names(data), nomatch = NA_integer_)))) {
-    message('Unknown variable(s): ', sQuote(include[id]), ' removed.')
-    include <- include[!id]
-  }
-  
-  include <- sort.default(include)
-  data <- data[c(include, groups)]
-  
-  for (i in include) {
+  for (i in names(data)) {
     if (is.character(data[[i]])) data[[i]] <- factor(data[[i]]) 
     # MUST!! otherwise missing groups in subset-data will not print zero-count
   }
@@ -153,12 +113,12 @@ DemographicTable <- function(
   }
   
   ############################################
-  ## Inspect `include` in detail
+  ## Inspect in detail
   ############################################
   
   # without `groups`
   # .. copy tzh::class1List
-  cl1 <- vapply(data[include], FUN = \(x) class(x)[1L], FUN.VALUE = '', USE.NAMES = TRUE)
+  cl1 <- vapply(data, FUN = \(x) class(x)[1L], FUN.VALUE = '', USE.NAMES = TRUE)
   vlst <- split.default(names(cl1), f = factor(cl1))
   
   if (length(vlst$matrix)) {
@@ -471,12 +431,6 @@ compare_factor <- function(x, g, ...) {
 
 
 # # write to Word file
-# library(flextable)
-# library(officer)
-# x = read_docx() |> body_add_flextable(value = as_flextable(DemographicTable(esoph)))
-# (out = file.path(tempdir(), 'demotable.docx'))
-# print(x, target = out)
-# # system(paste('open', out)) # works on Mac & Windows, but requires Microsoft Word
-# file.remove(out)
-# 
+# ?flextable:::print.flextable(, preview = 'docx')
+
 

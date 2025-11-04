@@ -3,11 +3,11 @@
 #' @title Summary Statistics
 #' 
 #' @description 
-#' Provide the summary statistics of an R object
+#' Summary statistics to be presented in a [DemographicTable].
 #' 
 #' @param x an R object
 #' 
-#' @param fmt (optional) \link[base]{character} scalar, only for function [.sumstat.default], see function \link[base]{sprintf}
+#' @param fmt (optional) \link[base]{character} scalar, only for function [.sumstat.default()], see function \link[base]{sprintf}
 #' 
 #' @param ... additional parameters, currently not in use
 #' 
@@ -17,11 +17,16 @@
 #' 
 #' @examples 
 #' airquality$Solar.R |> .sumstat()
-#' penguins$sex |> .sumstat()
+#' state.region |> .sumstat()
+#' 
 #' @keywords internal
 #' @name sumstat
 #' @export
 .sumstat <- function(x, fmt, ...) UseMethod(generic = '.sumstat')
+
+
+
+
 
 #' @rdname sumstat
 #' 
@@ -104,20 +109,22 @@
   
 }
 
-#' @rdname sumstat
-#' @export
-.sumstat.ordered <- .sumstat.factor
 
 #' @rdname sumstat
+#' @export .sumstat.character
 #' @export 
-.sumstat.character <- function(x, ...) .sumstat.factor(factor(x), ...)
-
+.sumstat.character <- function(x, ...) {
+  x |>
+    factor() |>
+    .sumstat.factor(...)
+}
 
 
 #' @rdname sumstat
+#' @export .sumstat.logical
 #' @export
 .sumstat.logical <- function(x, ...) {
-  warning(msg_logical())
+  msg_logical()
   if (!length(x)) return('')
   xok <- !is.na(x)
   if (!any(xok)) return('')

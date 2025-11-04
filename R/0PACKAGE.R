@@ -5,6 +5,7 @@
 #' 
 #' `vignette('intro', package = 'DemographicTable')`
 #' 
+#' @import cli
 #' @import flextable
 '_PACKAGE'
 

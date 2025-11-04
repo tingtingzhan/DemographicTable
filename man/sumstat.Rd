@@ -5,7 +5,6 @@
 \alias{.sumstat}
 \alias{.sumstat.default}
 \alias{.sumstat.factor}
-\alias{.sumstat.ordered}
 \alias{.sumstat.character}
 \alias{.sumstat.logical}
 \title{Summary Statistics}
@@ -16,8 +15,6 @@
 
 \method{.sumstat}{factor}(x, ...)
 
-\method{.sumstat}{ordered}(x, ...)
-
 \method{.sumstat}{character}(x, ...)
 
 \method{.sumstat}{logical}(x, ...)
@@ -25,7 +22,7 @@
 \arguments{
 \item{x}{an R object}
 
-\item{fmt}{(optional) \link[base]{character} scalar, only for function \link{.sumstat.default}, see function \link[base]{sprintf}}
+\item{fmt}{(optional) \link[base]{character} scalar, only for function \code{\link[=.sumstat.default]{.sumstat.default()}}, see function \link[base]{sprintf}}
 
 \item{...}{additional parameters, currently not in use}
 }
@@ -33,7 +30,7 @@
 Function \code{\link[=.sumstat]{.sumstat()}} returns a \link[base]{character} scalar.
 }
 \description{
-Provide the summary statistics of an R object
+Summary statistics to be presented in a \link{DemographicTable}.
 }
 \details{
 Function \code{\link[=.sumstat.default]{.sumstat.default()}} accepts all R objects of \link[base]{typeof} \link[base]{double} and \link[base]{integer}.
@@ -42,6 +39,7 @@ If the normality assumption via \link[stats]{shapiro.test} is not satisfied, the
 }
 \examples{
 airquality$Solar.R |> .sumstat()
-penguins$sex |> .sumstat()
+state.region |> .sumstat()
+
 }
 \keyword{internal}
