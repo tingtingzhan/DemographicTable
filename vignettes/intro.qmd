@@ -75,18 +75,18 @@ Data example `penguins` from package **`datasets`**
 ## Summary of all subjects
 
 ```{r}
-datasets::penguins |>
-  DemographicTable(include = c('species', 'island', 'bill_len')) |>
+datasets::penguins[c('species', 'island', 'bill_len')] |>
+  DemographicTable(data.name = 'datasets::penguins') |>
   as_flextable()
 ```
 
-## Summary by one `group`
+## Summary by one group
 
 Color of each individual `group` is determined by `scales::pal_hue()`, which is the default color pallete used in package **`ggplot2`**.
 
 ```{r}
 datasets::penguins[c('sex', 'species', 'bill_dep')] |>
-  DemographicTable(groups = 'sex', data.name = 'datasets::penguins') |> 
+  DemographicTable(by = ~ sex, data.name = 'datasets::penguins') |> 
   as_flextable()
 ```
 
@@ -94,15 +94,15 @@ User may choose to hide the $p$-values with option `compare = FALSE`.
 
 ```{r}
 datasets::penguins[c('sex', 'species', 'bill_dep')] |>
-  DemographicTable(groups = 'sex', data.name = 'datasets::penguins', compare = FALSE) |>
+  DemographicTable(by = ~ sex, data.name = 'datasets::penguins', compare = FALSE) |>
   as_flextable()
 ```
 
-## Summary by multiple `groups`
+## Summary by multiple groups
 
 ```{r}
-datasets::penguins |>
-  DemographicTable(groups = c('sex', 'island'), include = c('species', 'bill_dep'), compare = FALSE) |> 
+datasets::penguins[c('sex', 'island', 'species', 'bill_dep')] |>
+  DemographicTable(by = ~ sex + island, data.name = 'datasets::penguins', compare = FALSE) |> 
   as_flextable()
 ```
 
@@ -111,13 +111,13 @@ datasets::penguins |>
 ```{r}
 tb1 = datasets::penguins |>
   subset(subset = (sex == 'male'), select = c('island', 'species', 'bill_dep')) |>
-  DemographicTable(groups = 'island', data.name = 'Male Penguins', compare = FALSE)
+  DemographicTable(by = ~ island, data.name = 'Male Penguins', compare = FALSE)
 ```
 
 ```{r}
 tb2 = datasets::penguins |>
   subset(subset = (sex == 'female'), select = c('island', 'species', 'bill_dep')) |>
-  DemographicTable(groups = 'island', data.name = 'Female Penguins', compare = FALSE)
+  DemographicTable(by = ~ island, data.name = 'Female Penguins', compare = FALSE)
 ```
 
 ```{r}
@@ -126,11 +126,11 @@ c(tb1, tb2) |> as_flextable()
 
 # Exception Handling
 
-## Missing value in `groups`
+## Missing value in one or more groups
 
 ```{r}
 datasets::penguins[c('sex', 'body_mass', 'species')] |>
-  DemographicTable(groups = c('sex'), data.name = 'datasets::penguins') |>
+  DemographicTable(by = ~ sex, data.name = 'datasets::penguins') |>
   as_flextable()
 ```
 
@@ -147,10 +147,10 @@ mtc = datasets::mtcars |>
   subset.data.frame(select = c('am_manual', 'drat', 'vs_straight'))
 ```
 
-A warning message will be printed if `logical` variables are used in `groups` and/or `include`.
+A warning message will be printed if `logical` variables are used.
 
 ```{r}
-tryCatch(DemographicTable(mtc, groups = 'am_manual'), warning = identity)
+tryCatch(DemographicTable(mtc, by = ~ am_manual), warning = identity)
 ```
 
 Instead of using `logical` variables
@@ -158,7 +158,7 @@ Instead of using `logical` variables
 ```{r}
 #| warning: false
 mtc |>
-  DemographicTable(groups = 'am_manual') |>
+  DemographicTable(by = ~ am_manual) |>
   as_flextable()
 ```
 
@@ -171,7 +171,7 @@ mtcars |>
     am = ifelse(am, yes = 'manual', no = 'automatic')
   }) |> 
   subset.data.frame(select = c('am', 'drat', 'vs')) |>
-  DemographicTable(groups = 'am', data.name = 'mtcars') |>
+  DemographicTable(by = ~ am, data.name = 'mtcars') |>
   as_flextable()
 ```
 

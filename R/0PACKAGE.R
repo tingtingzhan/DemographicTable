@@ -7,6 +7,7 @@
 #' 
 #' @import cli
 #' @import flextable
+#' @import stats
 '_PACKAGE'
 
 

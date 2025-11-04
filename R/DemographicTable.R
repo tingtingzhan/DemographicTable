@@ -9,7 +9,7 @@
 #' @param data.name \link[base]{character} scalar, or the argument \link[base]{call} of `data`.  
 #' A user-friendly name of the input `data`.
 #' 
-#' @param groups \link[base]{character} scalar or \link[base]{vector}, 
+#' @param by one-sided \link[stats]{formula}, 
 #' the name(s) of sub-group(s) for which the summary statistics are provided.
 #' Default `NULL` indicating no sub-groups.
 #' 
@@ -49,11 +49,10 @@
 #' which is a \link[stats]{listof} `'sumtab'` elements.
 #' 
 #' @keywords internal
-#' @importFrom stats aov chisq.test fisher.test kruskal.test mcnemar.test pairwise.prop.test pairwise.t.test pairwise.wilcox.test prop.test quantile t.test sd wilcox.test
 #' @export
 DemographicTable <- function(
     data, data.name = substitute(data), 
-    groups = NULL,
+    by = NULL,
     robust = TRUE,
     overall = TRUE, 
     compare = TRUE,
@@ -70,53 +69,43 @@ DemographicTable <- function(
   data <- as.data.frame(data) # use S3
   if (anyDuplicated.default(names(data))) stop('Duplicated column names in raw data?')
   data <- data[!vapply(data, FUN = \(i) all(is.na(i)), FUN.VALUE = NA)] # remove all-missing columns 
-  
-  if (length(groups)) {
-    if (!is.character(groups) || anyNA(groups) || !all(nzchar(groups))) stop('groups must be character without NA or zchar')
-    groups <- unique.default(groups)
-    if (any(id <- is.na(match(groups, table = names(data), nomatch = NA_integer_)))) stop(sQuote(groups[id]), ' not in names of data. Removed accidentally?')
-    if (any(id <- vapply(data[groups], FUN = is.matrix, FUN.VALUE = NA, USE.NAMES = FALSE))) stop(sQuote(groups[id]), ' is/are matrix column(s).')
-    if ((data[groups]) |> 
-        vapply(FUN = is.logical, FUN.VALUE = NA) |>
-        any()) msg_logical()
+  for (i in seq_along(data)) {
+    if (is.character(data[[i]])) data[[i]] <- factor(data[[i]])
   }
   
-  for (i in names(data)) {
-    if (is.character(data[[i]])) data[[i]] <- factor(data[[i]]) 
-    # MUST!! otherwise missing groups in subset-data will not print zero-count
-  }
-  
-  ##################################################################
-  ## Inspect `groups` in detail (removing rows if needed)
-  ##################################################################
-  
-  if (length(groups)) {
-    
-    names(groups) <- groups
-    
-    for (i in seq_along(groups)) {
-      
-      grp <- groups[i]
-      grpv <- data[[grp]]
-      
-      if (any(id <- is.na(grpv))) {
-        names(groups)[i] <- sprintf(fmt = '%s\nn=%d (%.1f%%) missing', names(groups)[i], sum(id), 1e2*mean.default(id))
-      } # else do nothing
-      
-      if (length(unique(grpv[!id])) == 1L) {
-        message('Column ', sQuote(grp), ' has single value, thus removed from `groups`.')
-        groups <- setdiff(groups, grp)
-      }
-      
-    } # remove any group with all-same entries
-    
-  }
+  if (!missing(by) && length(by)) {
+    if (!is.call(by) || by[[1L]] != '~' || length(by) != 2L) stop('`by` must be one-sided formula')
+    f <- by |> 
+      terms.formula() |>
+      attr(which = 'term.labels', exact = TRUE) |> # beautiful!
+      lapply(FUN = \(i) {
+        f <- i |>
+          sprintf(fmt = '~%s') |>
+          str2lang() |>
+          model.frame.default(formula = _, data = data, na.action = NULL) |> # beautiful!
+          interaction(drop = TRUE, sep = '.', lex.order = TRUE) # 'factor' :)
+        
+        nm <- i
+        if (any(id <- is.na(f))) {
+          nm <- sprintf(fmt = '%s\nn=%d (%.1f%%) missing', nm, sum(id), 1e2*mean.default(id))
+        } # else do nothing
+        
+        if (length(unique(f[!id])) == 1L) {
+          message('Group ', sQuote(i), ' has single value, thus removed.')
+          return(invisible())
+        }
+        list(f) |>
+          setNames(nm = nm)
+      }) |>
+      unlist(recursive = FALSE) # a 'list' of 'factor's; beautiful!!!
+  } else f <- NULL
+
   
   ############################################
   ## Inspect in detail
   ############################################
   
-  # without `groups`
+  # without `by`
   # .. copy tzh::class1List
   cl1 <- vapply(data, FUN = \(x) class(x)[1L], FUN.VALUE = '', USE.NAMES = TRUE)
   vlst <- split.default(names(cl1), f = factor(cl1))
@@ -135,16 +124,17 @@ DemographicTable <- function(
   }
   
   ######################
-  # Done! use `data`, `vlst` and `groups` below
+  # Done! use `data`, `vlst` and `f` below
   ######################
   
   ret0 <- if (overall) list(.sumtab(data, data.name = data.name, vlst = vlst, ...)) # else NULL      
-  ret1 <- if (length(groups)) {
-    # in this way, `names(groups)` won't be passed into [.sumtab_by]
-    groups |>
+  ret1 <- if (length(f)) {
+    f |>
       seq_along() |>
       lapply(FUN = \(i) {
-        .sumtab_by(data = data, data.name = data.name, group = groups[i], vlst = vlst, compare = compare, robust = robust, pairwise = pairwise, ...)
+        z <- .sumtab_by(data = data, data.name = data.name, f = f[[i]], vlst = vlst, compare = compare, robust = robust, pairwise = pairwise, ...)
+        attr(z, which = 'group') <- setNames(nm = names(f)[i]) # downstream compatibility
+        return(z)
       })
   }
   ret <- c(ret0, ret1)
@@ -216,18 +206,23 @@ DemographicTable <- function(
 
 
 
-.sumtab_by <- function(data, data.name, vlst, group, robust = TRUE, compare = TRUE, pairwise = 3L, ...) { # SMD = FALSE, 
+#.sumtab_by <- function(data, data.name, vlst, group, robust = TRUE, compare = TRUE, pairwise = 3L, ...) { # SMD = FALSE,
+.sumtab_by <- function(data, data.name, vlst, f, robust = TRUE, compare = TRUE, pairwise = 3L, ...) { # SMD = FALSE, 
+  #if (!is.character(group) || length(group) != 1L || anyNA(group) || !nzchar(group)) stop('`group` must be len-1 character')
   
-  if (!is.character(group) || length(group) != 1L || anyNA(group) || !nzchar(group)) stop('`group` must be len-1 character')
+  #f <- factor(data[[group]])
   
-  fgrp <- factor(data[[group]])
-  gidx <- split.default(seq_along(fgrp), f = fgrp) # missingness in `fgrp` dropped
+  ######## parameter `f` is a 'factor' !!!
+  
+  gidx <- split.default(seq_along(f), f = f) # missingness in `f` dropped
   gN <- lengths(gidx, use.names = FALSE)
   
-  ret <- do.call(cbind, args = lapply(gidx, FUN = \(id) { # (id = gidx[[1L]])
-    .sumtab(data[id, , drop = FALSE], data.name = '', vlst = vlst, ...)
-  }))
-  colnames(ret) <- sprintf(fmt = '%s\nn=%d (%.1f%%)', names(gidx), gN, 1e2*gN/length(fgrp)) # before removing NA!!!
+  ret <- gidx |>
+    lapply(FUN = \(id) { # (id = gidx[[1L]])
+      .sumtab(data[id, , drop = FALSE], data.name = '', vlst = vlst, ...)
+    }) |>
+    do.call(what = cbind)
+  colnames(ret) <- sprintf(fmt = '%s\nn=%d (%.1f%%)', names(gidx), gN, 1e2*gN/length(f)) # before removing NA!!!
   
   # removing single 'group' for p-values
   txt_g1 <- if (any(g1 <- (gN == 1L))) {
@@ -242,7 +237,7 @@ DemographicTable <- function(
   if (compare) {
     p_double <- c(vlst$integer, vlst$numeric, vlst$difftime) |> vapply(FUN = \(i) compare_double(demo_get(x = data[[i]], gidx = gidx), robust = robust, pairwise = pairwise, ...), FUN.VALUE = '')
     p_bool <- vlst$logical |> vapply(FUN = \(i) compare_bool(demo_get(x = data[[i]], gidx = gidx), pairwise = pairwise, ...), FUN.VALUE = '')
-    p_factor <- c(vlst$character, vlst$factor, vlst$ordered) |> vapply(FUN = \(i) compare_factor(x = data[[i]], g = fgrp, ...), FUN.VALUE = '')
+    p_factor <- c(vlst$character, vlst$factor, vlst$ordered) |> vapply(FUN = \(i) compare_factor(x = data[[i]], g = f, ...), FUN.VALUE = '')
     pval <- c(p_double, p_bool, p_factor)
     if (dim(ret)[1L] != length(pval)) stop('demographic table contruction wrong: pval do not match summary stats')
     ret_compare <- as.matrix(pval)
@@ -250,7 +245,6 @@ DemographicTable <- function(
   } else ret_compare <- NULL
   
   ret <- cbind(ret, ret_compare)
-  attr(ret, which = 'group') <- group
   attr(ret, which = 'data.name') <- data.name
   attr(ret, which = 'compare') <- compare
   class(ret) <- 'sumtab'

@@ -7,7 +7,7 @@
 DemographicTable(
   data,
   data.name = substitute(data),
-  groups = NULL,
+  by = NULL,
   robust = TRUE,
   overall = TRUE,
   compare = TRUE,
@@ -21,7 +21,7 @@ DemographicTable(
 \item{data.name}{\link[base]{character} scalar, or the argument \link[base]{call} of \code{data}.
 A user-friendly name of the input \code{data}.}
 
-\item{groups}{\link[base]{character} scalar or \link[base]{vector},
+\item{by}{one-sided \link[stats]{formula},
 the name(s) of sub-group(s) for which the summary statistics are provided.
 Default \code{NULL} indicating no sub-groups.}
 

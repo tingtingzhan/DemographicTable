@@ -34,7 +34,6 @@
 #'  with(expr = split(Ozone, f = Month)) |>
 #'  sapply(FUN = pval_shapiro)
 #' @keywords internal
-#' @importFrom stats shapiro.test
 #' @export
 pval_shapiro <- function(x, CLT = FALSE, ...) {
   x0 <- as.double(x[!is.na(x)]) # ?stats::shapiro.test will drop NA though

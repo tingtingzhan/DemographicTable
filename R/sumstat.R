@@ -36,7 +36,6 @@
 #' If the normality assumption via \link[stats]{shapiro.test} is not satisfied, then \link[stats]{median} and \link[stats]{mad} are also reported.
 #' 
 # @importFrom e1071 skewness
-#' @importFrom stats setNames
 #' @export .sumstat.default
 #' @export
 .sumstat.default <- function(x, fmt = '%.2f', ...) {
@@ -94,7 +93,7 @@
   ct <- table(c(x), useNA = 'no')
   # ?base::c important, there might be 'matrix'-'factor' for ?DemographicTable
   # `useNA = 'ifany'` is not allowed
-  # stop('useNA either \'no\' or \'always\' to guarantee equal names for all \'groups\' in DemographicTable')
+  # stop('useNA either \'no\' or \'always\' to guarantee equal names for all \'by\' in DemographicTable')
   # Dec 2024: no one wants to use `useNA = 'always'`; this parameter removed
   
   if (anyNA(nm0 <- names(ct))) stop('wont happen')

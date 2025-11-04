@@ -1,3 +1,5 @@
+# DemographicTable 0.3.0
+Character parameter 'groups' deprecated.  Use formula `by` instead.
 # DemographicTable 0.2.0
 Vignettes.. finally!
 # DemographicTable 0.1.11
