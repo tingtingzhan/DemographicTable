@@ -173,7 +173,11 @@ mtc = datasets::mtcars |>
 A warning message will be printed if `logical` variables are used.
 
 ```{r}
-tryCatch(DemographicTable(mtc, by = ~ am_manual), warning = identity)
+tryCatch(expr = {
+  mtc |>
+    DemographicTable(by = ~ am_manual) |>
+    as_flextable()
+  }, warning = identity)
 ```
 
 Instead of using `logical` variables
