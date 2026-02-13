@@ -75,7 +75,8 @@ Data example `penguins` from package **`datasets`**
 ## Summary of all subjects
 
 ```{r}
-datasets::penguins[c('species', 'island', 'bill_len')] |>
+datasets::penguins |>
+  subset.data.frame(select = c('species', 'island', 'bill_len')) |>
   DemographicTable(data.name = 'datasets::penguins') |>
   as_flextable()
 ```
@@ -85,7 +86,10 @@ datasets::penguins[c('species', 'island', 'bill_len')] |>
 Color of each individual `group` is determined by `scales::pal_hue()`, which is the default color pallete used in package **`ggplot2`**.
 
 ```{r}
-datasets::penguins[c('sex', 'species', 'bill_dep')] |>
+#| lst-label: lst-penguins_sex
+#| lst-cap: '`penguins` by `sex`'
+datasets::penguins |>
+  subset.data.frame(select = c('sex', 'species', 'bill_dep')) |>
   DemographicTable(by = ~ sex, data.name = 'datasets::penguins') |> 
   as_flextable()
 ```
@@ -93,7 +97,8 @@ datasets::penguins[c('sex', 'species', 'bill_dep')] |>
 User may choose to hide the $p$-values with option `compare = FALSE`.
 
 ```{r}
-datasets::penguins[c('sex', 'species', 'bill_dep')] |>
+datasets::penguins |>
+  subset.data.frame(select = c('sex', 'species', 'bill_dep')) |>
   DemographicTable(by = ~ sex, data.name = 'datasets::penguins', compare = FALSE) |>
   as_flextable()
 ```
@@ -101,7 +106,8 @@ datasets::penguins[c('sex', 'species', 'bill_dep')] |>
 ## Summary by multiple groups
 
 ```{r}
-datasets::penguins[c('sex', 'island', 'species', 'bill_dep')] |>
+datasets::penguins |>
+  subset.data.frame(select = c('sex', 'island', 'species', 'bill_dep')) |>
   DemographicTable(by = ~ sex + island, data.name = 'datasets::penguins', compare = FALSE) |> 
   as_flextable()
 ```
@@ -130,7 +136,8 @@ c(male, female) |>
 Remove the "overall" column.
 
 ```{r}
-tb = datasets::penguins[c('sex', 'island', 'species', 'bill_dep')] |>
+tb = datasets::penguins |>
+  subset.data.frame(select = c('sex', 'island', 'species', 'bill_dep')) |>
   DemographicTable(by = ~ sex + island, data.name = 'datasets::penguins', compare = FALSE)
 tb[-1L] |> 
   as_flextable()
@@ -151,11 +158,8 @@ c(male, female)[c(2L, 4L)] |>
 
 ## Missing value in one or more groups
 
-```{r}
-datasets::penguins[c('sex', 'body_mass', 'species')] |>
-  DemographicTable(by = ~ sex, data.name = 'datasets::penguins') |>
-  as_flextable()
-```
+See @lst-penguins_sex.
+
 
 ## Use of `logical` values
 

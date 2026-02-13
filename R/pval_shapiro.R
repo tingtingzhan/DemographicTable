@@ -31,7 +31,7 @@
 #' @examples 
 #' rnorm(5) |> pval_shapiro()
 #' airquality |>
-#'  with(expr = split(Ozone, f = Month)) |>
+#'  with.default(expr = split(Ozone, f = Month)) |>
 #'  sapply(FUN = pval_shapiro)
 #' @keywords internal
 #' @export

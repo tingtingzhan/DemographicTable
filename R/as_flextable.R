@@ -14,7 +14,7 @@
 #' @param ... additional parameters, not currently in use 
 #' 
 #' @returns 
-#' Function [as_flextable.DemographicTable()] returns a \link[flextable]{flextable}.
+#' The `S3` method [as_flextable.DemographicTable()] returns a \link[flextable]{flextable}.
 #' 
 #' @note
 #' End user may use function \link[flextable]{set_caption} to add a caption to the output demographic table.
@@ -163,10 +163,9 @@ as_flextable.sumtab <- function(x, ...) {
 #' @param ... additional parameters of function \link[flextable]{print.flextable}
 #' 
 #' @returns 
-#' Function [print.DemographicTable()] returns a \link[flextable]{flextable} \link[base]{invisible}-y.
+#' The `S3` method [print.DemographicTable()] returns a \link[flextable]{flextable} \link[base]{invisible}-y.
 #' 
 #' @keywords internal
-# @importFrom utils getS3method
 #' @export print.DemographicTable
 #' @export
 print.DemographicTable <- function(x, ...) {
@@ -179,7 +178,7 @@ print.DemographicTable <- function(x, ...) {
     print(...) 
   # rmarkdown code-chunk is `!interactive()` 
   
-  return(invisible(z)) # does not work in vignette ..
+  return(invisible(z))
   
 }
 

@@ -34,7 +34,7 @@ Function \code{\link[=pval_shapiro]{pval_shapiro()}} provides a pseudo \eqn{p}-v
 \examples{
 rnorm(5) |> pval_shapiro()
 airquality |>
- with(expr = split(Ozone, f = Month)) |>
+ with.default(expr = split(Ozone, f = Month)) |>
  sapply(FUN = pval_shapiro)
 }
 \keyword{internal}

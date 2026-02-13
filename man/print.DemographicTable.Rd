@@ -12,7 +12,7 @@
 \item{...}{additional parameters of function \link[flextable]{print.flextable}}
 }
 \value{
-Function \code{\link[=print.DemographicTable]{print.DemographicTable()}} returns a \link[flextable]{flextable} \link[base]{invisible}-y.
+The \code{S3} method \code{\link[=print.DemographicTable]{print.DemographicTable()}} returns a \link[flextable]{flextable} \link[base]{invisible}-y.
 }
 \description{
 Print \link{DemographicTable}

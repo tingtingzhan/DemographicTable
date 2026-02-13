@@ -10,7 +10,7 @@
 \item{...}{one or more \link{DemographicTable} objects}
 }
 \value{
-Function \code{\link[=c.DemographicTable]{c.DemographicTable()}} returns a \link{DemographicTable} object.
+The \code{S3} method \code{\link[=c.DemographicTable]{c.DemographicTable()}} returns a \link{DemographicTable} object.
 }
 \description{
 Concatenate \link{DemographicTable} Objects

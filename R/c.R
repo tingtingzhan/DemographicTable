@@ -4,7 +4,7 @@
 #' @param ... one or more [DemographicTable] objects
 #' 
 #' @returns
-#' Function [c.DemographicTable()] returns a [DemographicTable] object.
+#' The `S3` method [c.DemographicTable()] returns a [DemographicTable] object.
 #' 
 #' @keywords internal
 #' @export c.DemographicTable
