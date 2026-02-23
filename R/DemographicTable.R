@@ -168,7 +168,7 @@ DemographicTable <- function(
   } #else NULL
 
   ret0 <- c(out_num, out_difft, out_bool, out_factor)
-  nm <- paste0('n=', .row_names_info(data, type = 2L))
+  nm <- paste0('n=', nrow(data))
   ret <- array(ret0, dim = c(length(ret0), 1L), dimnames = list(names(ret0), nm))
   attr(ret, which = 'group') <- nm
   attr(ret, which = 'compare') <- FALSE
