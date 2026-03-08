@@ -2,7 +2,7 @@
 % Please edit documentation in R/DemographicTable.R
 \name{DemographicTable}
 \alias{DemographicTable}
-\title{Create Demographic Table}
+\title{Demographic Table}
 \usage{
 DemographicTable(data, data.name = substitute(data), by = NULL, ...)
 }
@@ -20,7 +20,7 @@ Default \code{NULL} indicating no sub-groups.}
 \item{...}{additional parameters, currently not in use}
 }
 \value{
-Function \code{\link[=DemographicTable]{DemographicTable()}} returns an object of S3 class \code{'DemographicTable'},
+The function \code{\link[=DemographicTable]{DemographicTable()}} returns an object of S3 class \code{'DemographicTable'},
 which is a \link[stats]{listof} \code{'sumtab'} elements.
 }
 \description{

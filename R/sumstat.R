@@ -13,7 +13,7 @@
 #' 
 #' @returns 
 #' 
-#' Function [.sumstat()] returns a \link[base]{character} scalar.
+#' The function [.sumstat()] returns a \link[base]{character} scalar.
 #' 
 #' @examples 
 #' airquality$Solar.R |> .sumstat()
@@ -31,7 +31,7 @@
 #' @rdname sumstat
 #' 
 #' @details
-#' Function [.sumstat.default()] accepts all R objects of \link[base]{typeof} \link[base]{double} and \link[base]{integer}.
+#' The function [.sumstat.default()] accepts all R objects of \link[base]{typeof} \link[base]{double} and \link[base]{integer}.
 #' Statistics of \link[base]{mean}, \link[stats]{sd} and \link[base]{range} are reported.
 #' If the normality assumption via \link[stats]{shapiro.test} is not satisfied, then \link[stats]{median} and \link[stats]{mad} are also reported.
 #' 
