@@ -3,3 +3,5 @@
 ^CRAN-SUBMISSION$
 vignettes/rsconnect
 vignettes/.*_files
+^\.positai$
+^\.claude$

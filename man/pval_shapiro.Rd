@@ -31,6 +31,9 @@ The function \code{\link[=pval_shapiro]{pval_shapiro()}} provides a pseudo \eqn{
 \item{Otherwise}{use the \eqn{p}-value from \link[stats]{shapiro.test}.}
 }
 }
+\note{
+The function \link[stats]{shapiro.test} return does not contain sample size (as of R 4.5.2).
+}
 \examples{
 rnorm(5) |> 
  pval_shapiro()

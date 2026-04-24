@@ -28,6 +28,9 @@
 #' @returns 
 #' The function [pval_shapiro()] returns a \link[base]{double} scalar.
 #' 
+#' @note
+#' The function \link[stats]{shapiro.test} return does not contain sample size (as of R 4.5.2).
+#' 
 #' @examples 
 #' rnorm(5) |> 
 #'  pval_shapiro()
@@ -40,7 +43,7 @@
 pval_shapiro <- function(x, CLT = FALSE, ...) {
   x0 <- as.double(x[!is.na(x)]) # ?stats::shapiro.test will drop NA though
   n <- length(x0)
-  # R 4.0.*, ?stats::shapiro.test do not allow sample size <3L or >5e3L
+  # R 4.5.*, ?stats::shapiro.test do not allow sample size <3L or >5e3L
   if (n < 3L) return(0) # robust methods needed for n<3L
   if (n > 5e3L) return(1) # robust methods might be too slow?
   if (n > 30L && CLT) return(1) # central limit theorem, no need for robust methods
