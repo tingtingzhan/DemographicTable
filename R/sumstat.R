@@ -42,7 +42,7 @@
   
   # 'numeric', 'integer', 'difftime', etc
   
-  if (!(typeof(x) %in% c('double', 'integer'))) stop('input must have type double or integer')
+  if (typeof(x) %notin% c('double', 'integer')) stop('input must have type double or integer')
   x0 <- unclass(x)
   x <- x0[is.finite(x0)] # NA/Inf/-Inf removed
   
