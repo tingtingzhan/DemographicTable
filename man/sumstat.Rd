@@ -22,7 +22,7 @@
 \arguments{
 \item{x}{an R object}
 
-\item{fmt}{(optional) \link[base]{character} scalar, only for function \code{\link[=.sumstat.default]{.sumstat.default()}}, see function \link[base]{sprintf}}
+\item{fmt}{(optional) \link[base]{character} scalar, only for the function \code{.sumstat.default()}, see function \link[base]{sprintf}}
 
 \item{...}{additional parameters, currently not in use}
 }
@@ -33,7 +33,7 @@ The function \code{\link[=.sumstat]{.sumstat()}} returns a \link[base]{character
 Summary statistics to be presented in a \link{DemographicTable}.
 }
 \details{
-The function \code{\link[=.sumstat.default]{.sumstat.default()}} accepts all R objects of \link[base]{typeof} \link[base]{double} and \link[base]{integer}.
+The function \code{.sumstat.default()} accepts all R objects of \link[base]{typeof} \link[base]{double} and \link[base]{integer}.
 Statistics of \link[base]{mean}, \link[stats]{sd} and \link[base]{range} are reported.
 If the normality assumption via \link[stats]{shapiro.test} is not satisfied, then \link[stats]{median} and \link[stats]{mad} are also reported.
 }

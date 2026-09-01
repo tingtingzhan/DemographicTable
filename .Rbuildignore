@@ -1,7 +1,6 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^CRAN-SUBMISSION$
-vignettes/rsconnect
-vignettes/.*_files
+vignettes
 ^\.positai$
 ^\.claude$

@@ -40,7 +40,7 @@
 #'  sapply(FUN = pval_shapiro)
 #' @keywords internal
 #' @export
-pval_shapiro <- function(x, CLT = FALSE, ...) {
+pval_shapiro <- \(x, CLT = FALSE, ...) {
   x0 <- as.double(x[!is.na(x)]) # ?stats::shapiro.test will drop NA though
   n <- length(x0)
   # R 4.5.*, ?stats::shapiro.test do not allow sample size <3L or >5e3L

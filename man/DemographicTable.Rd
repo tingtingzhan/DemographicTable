@@ -31,7 +31,7 @@ with optional comparison(s) over one or more groups.
 A demographic table with simple summary statistics, with optional comparison(s) over one or more groups, is created.
 
 \link[base]{numeric} variables are summarized in means, standard deviations, medians, inter-quartile-ranges (IQR),
-skewness, \eqn{p}-value of Shapiro-Wilk normality test and ranges.
+\eqn{p}-value of Shapiro-Wilk normality test and ranges.
 If \code{group} is specified, they are compared using two-sample \link[stats]{t.test},
 \link[stats]{wilcox.test} (Wilcoxon / Mann-Whitney), one-way \link[stats]{aov} (ANOVA) and/or
 \link[stats]{kruskal.test} (Kruskal-Wallis).

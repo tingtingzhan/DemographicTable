@@ -7,7 +7,7 @@
 #' 
 #' @keywords internal
 #' @export
-msg_logical <- function() {
+msg_logical <- \() {
   
   sprintf(
     fmt = 'Some scientists do not understand %s value, e.g., %s being %s/%s.',

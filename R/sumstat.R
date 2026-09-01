@@ -7,7 +7,7 @@
 #' 
 #' @param x an R object
 #' 
-#' @param fmt (optional) \link[base]{character} scalar, only for function [.sumstat.default()], see function \link[base]{sprintf}
+#' @param fmt (optional) \link[base]{character} scalar, only for the function `.sumstat.default()`, see function \link[base]{sprintf}
 #' 
 #' @param ... additional parameters, currently not in use
 #' 
@@ -31,14 +31,12 @@
 #' @rdname sumstat
 #' 
 #' @details
-#' The function [.sumstat.default()] accepts all R objects of \link[base]{typeof} \link[base]{double} and \link[base]{integer}.
+#' The function `.sumstat.default()` accepts all R objects of \link[base]{typeof} \link[base]{double} and \link[base]{integer}.
 #' Statistics of \link[base]{mean}, \link[stats]{sd} and \link[base]{range} are reported.
 #' If the normality assumption via \link[stats]{shapiro.test} is not satisfied, then \link[stats]{median} and \link[stats]{mad} are also reported.
 #' 
-# @importFrom e1071 skewness
-#' @export .sumstat.default
 #' @export
-.sumstat.default <- function(x, fmt = '%.2f', ...) {
+.sumstat.default <- \(x, fmt = '%.2f', ...) {
   
   # 'numeric', 'integer', 'difftime', etc
   
@@ -84,9 +82,8 @@
 
 
 #' @rdname sumstat
-#' @export .sumstat.factor
 #' @export
-.sumstat.factor <- function(x, ...) {
+.sumstat.factor <- \(x, ...) {
   
   if (!length(x)) return('')
   
@@ -112,7 +109,7 @@
 #' @rdname sumstat
 #' @export .sumstat.character
 #' @export 
-.sumstat.character <- function(x, ...) {
+.sumstat.character <- \(x, ...) {
   x |>
     factor() |>
     .sumstat.factor(...)
@@ -120,9 +117,8 @@
 
 
 #' @rdname sumstat
-#' @export .sumstat.logical
 #' @export
-.sumstat.logical <- function(x, ...) {
+.sumstat.logical <- \(x, ...) {
   msg_logical()
   if (!length(x)) return('')
   xok <- !is.na(x)

@@ -14,11 +14,11 @@ Users are encouraged to get started with
 \code{vignette('intro', package = 'DemographicTable')}
 }
 \author{
-\strong{Maintainer}: Tingting Zhan \email{tingtingzhan@gmail.com} (\href{https://orcid.org/0000-0001-9971-4844}{ORCID})
+\strong{Maintainer}: Tingting Zhan \email{tingtingzhan@gmail.com}
 
 Authors:
 \itemize{
-  \item Tingting Zhan \email{tingtingzhan@gmail.com} (\href{https://orcid.org/0000-0001-9971-4844}{ORCID})
+  \item Tingting Zhan \email{tingtingzhan@gmail.com}
 }
 
 }

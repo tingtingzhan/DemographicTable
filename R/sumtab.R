@@ -4,7 +4,7 @@
 ## work horse
 ##################
 
-.sumtab <- function(data, vlst, fmt = '%.1f', ...) {# useNA = c('no', 'always'), 
+.sumtab <- \(data, vlst, fmt = '%.1f', ...) {# useNA = c('no', 'always'), 
   
   out_num <- if (length(.num <- c(vlst$integer, vlst$numeric))) {
     names(.num) <- .num
@@ -53,7 +53,7 @@
 # @param compare \link[base]{logical} scalar. If `TRUE` (default), comparisons between group(s) will be made.
 
 
-.sumtab_by <- function(data, data.name, vlst, f, robust = TRUE, compare = TRUE, pairwise = 3L, ...) { # SMD = FALSE, 
+.sumtab_by <- \(data, data.name, vlst, f, robust = TRUE, compare = TRUE, pairwise = 3L, ...) { # SMD = FALSE, 
   
   ######## parameter `f` is a 'factor' !!!
   
@@ -142,19 +142,18 @@ print.sumtab <- function(x, ...) {
 
 # fastmd::label_pvalue_sym
 
-
-
-symb <- function(p) { # vectorized
+symb <- \(p) { # vectorized
   ret <- character(length = length(p))
   ret[p < .05] <- '\u2605 '
   return(ret)
 }
 
 
-pText_pairwise.htest <- function(x) {
+pText_pairwise.htest <- \(x) {
   dnm <- dimnames(pv0 <- x$p.value)
-  dnm1 <- paste0('\u2e22', dnm[[1L]], '\u2e25')
-  dnm2 <- paste0('\u2e22', dnm[[2L]], '\u2e25')
+  fmt <- '\u2e22%s\u2e25'
+  dnm1 <- sprintf(fmt = fmt, dnm[[1L]])
+  dnm2 <- sprintf(fmt = fmt, dnm[[2L]])
   id <- lower.tri(pv0, diag = TRUE)
   pv <- pv0[id]
   pnm <- outer(dnm1, dnm2, FUN = paste, sep = ' vs. ')[id]
