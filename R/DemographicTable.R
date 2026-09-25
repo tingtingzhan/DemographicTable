@@ -224,12 +224,17 @@ as_flextable.DemographicTable <- function(x, font.size = 10, ...) {
 #' @export
 print.DemographicTable <- function(x, ...) {
   
-  x |> 
-    as_flextable.DemographicTable(...) |>
-    print() # ?flextable:::print.flextable
+  z <- x |> 
+    as_flextable.DemographicTable(...)
   
   # ?flextable:::print.flextable # read inside very carefully!!!
-  # rmarkdown code-chunk is `!interactive()` 
+  
+  if (interactive()) {
+    print(z) # ?flextable:::print.flextable
+  } else {
+    # rmarkdown code-chunk is `!interactive()` 
+    return(z)
+  }
   
 }
 

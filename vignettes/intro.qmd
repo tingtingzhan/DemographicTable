@@ -1,0 +1,176 @@
+---
+title: "Demographic Table"
+author: Tingting Zhan
+date: today
+format: 
+  html:
+    page-layout: full
+    html-math-method: katex
+number-sections: true
+toc: true
+toc-location: left
+toc-depth: 4
+toc-title: ''
+editor: source
+knitr:
+  opts_chunk: 
+    collapse: true
+    comment: "#" 
+vignette: >
+  %\VignetteIndexEntry{intro}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+
+# Introduction
+
+
+```{r}
+#| eval: false
+#| echo: false
+pak::pak('tingtingzhan/DemographicTable')
+```
+
+```{r}
+#| eval: false
+utils::install.packages('DemographicTable')
+```
+
+## Getting Started
+
+Examples in this vignette requires
+
+```{r}
+library(DemographicTable)
+```
+
+Users may remove the last pipe `|> print()` from all examples if they are using R [`interactive`](https://search.r-project.org/R/refmans/base/html/interactive.html)ly.
+
+# Demographic Table
+
+
+## Summary of all subjects
+
+```{r}
+datasets::penguins |>
+  subset.data.frame(select = c('species', 'island', 'bill_len')) |>
+  DemographicTable(data.name = 'datasets::penguins') |>
+  print()
+```
+
+## Summary by one group
+
+Color of each individual `group` is determined by `scales::pal_hue()`, which is the default color pallete used in package **`ggplot2`**.
+
+```{r}
+#| lst-label: lst-penguins_sex
+#| lst-cap: '`penguins` by `sex`'
+datasets::penguins |>
+  subset.data.frame(select = c('sex', 'species', 'bill_dep')) |>
+  DemographicTable(by = ~ sex, data.name = 'datasets::penguins') |> 
+  print()
+```
+
+User may choose to hide the $p$-values with option `compare = FALSE`.
+
+```{r}
+datasets::penguins |>
+  subset.data.frame(select = c('sex', 'species', 'bill_dep')) |>
+  DemographicTable(by = ~ sex, data.name = 'datasets::penguins', compare = FALSE) |>
+  print()
+```
+
+## Summary by multiple groups
+
+```{r}
+datasets::penguins |>
+  subset.data.frame(select = c('sex', 'island', 'species', 'bill_dep')) |>
+  DemographicTable(by = ~ sex + island, data.name = 'datasets::penguins', compare = FALSE) |> 
+  print()
+```
+
+# Combine Multiple `DemographicTable`s
+
+```{r}
+male = datasets::penguins |>
+  subset(subset = (sex == 'male'), select = c('island', 'species', 'bill_dep')) |>
+  DemographicTable(by = ~ island, data.name = 'Male Penguins', compare = FALSE)
+```
+
+```{r}
+female = datasets::penguins |>
+  subset(subset = (sex == 'female'), select = c('island', 'species', 'bill_dep')) |>
+  DemographicTable(by = ~ island, data.name = 'Female Penguins', compare = FALSE)
+```
+
+```{r}
+c(male, female) |> 
+  print()
+```
+
+# Advance Usage
+
+Remove the "overall" column.
+
+```{r}
+tb = datasets::penguins |>
+  subset.data.frame(select = c('sex', 'island', 'species', 'bill_dep')) |>
+  DemographicTable(by = ~ sex + island, data.name = 'datasets::penguins', compare = FALSE)
+tb[-1L] |> 
+  print()
+```
+
+
+```{r}
+c(male, female)[2:4] |> 
+  print()
+```
+
+```{r}
+c(male, female)[c(2L, 4L)] |> 
+  print()
+```
+
+# Exception Handling
+
+## Missing value in one or more groups
+
+See @lst-penguins_sex.
+
+
+## Use of `logical` values
+
+Using [`logical`](https://search.r-project.org/R/refmans/base/html/logical.html) values is discouraged (@lst-logical), as this practice is proved confusing to scientists without a strong data background.
+
+```{r}
+#| warning: false
+#| lst-label: lst-logical
+#| lst-cap: 'Using `logical` values is discouraged'
+datasets::mtcars |>
+  within.data.frame(expr = {
+    vs_straight = as.logical(vs)
+    am_manual = as.logical(am)
+  }) |>
+  subset.data.frame(select = c('am_manual', 'drat', 'vs_straight')) |>
+  DemographicTable(by = ~ am_manual, data.name = 'mtcars') |>
+  print()
+```
+
+
+Instead of using [`logical`](https://search.r-project.org/R/refmans/base/html/logical.html) variables, we recommend using 2-`level` [`factor`](https://search.r-project.org/R/refmans/base/html/factor.html)s (@lst-factor).
+
+```{r}
+#| lst-label: lst-factor
+#| lst-cap: 'We recommend using 2-`level` `factor`s'
+datasets::mtcars |>
+  within.data.frame(expr = {
+    vs = ifelse(vs, yes = 'Straight', no = 'V-shaped')
+    am = ifelse(am, yes = 'manual', no = 'automatic')
+  }) |> 
+  subset.data.frame(select = c('am', 'drat', 'vs')) |>
+  DemographicTable(by = ~ am, data.name = 'mtcars') |>
+  print()
+```
+

@@ -1,7 +1,6 @@
 .DS_Store
-inst
-vignettes
-
+vignettes/*.html
+vignettes/*/
 
 
 # History files

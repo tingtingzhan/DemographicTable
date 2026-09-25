@@ -2,7 +2,7 @@ Package: DemographicTable
 Type: Package
 Title: Create Demographic Table
 Version: 0.2.4
-Date: 2026-09-01
+Date: 2026-09-25
 Description: To create demographic table with simple summary statistics, with optional comparison(s) over one or more groups.
 License: GPL-2
 Encoding: UTF-8
@@ -10,5 +10,7 @@ Authors@R: c(person(given = "Tingting", family = "Zhan", role = c("aut", "cre"),
 Language: en-US
 Depends: R (>= 4.6)
 Imports: cli, flextable, officer, scales
+Suggests: knitr, quarto, rmarkdown
+VignetteBuilder: quarto
 Config/roxygen2/version: 8.1.0
 Config/roxygen2/markdown: TRUE
