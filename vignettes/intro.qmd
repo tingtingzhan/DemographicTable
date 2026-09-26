@@ -55,7 +55,7 @@ Users may remove the last pipe `|> print()` from all examples if they are using 
 
 ```{r}
 datasets::penguins |>
-  subset.data.frame(select = c('species', 'island', 'bill_len')) |>
+  subset(select = c('species', 'island', 'bill_len')) |>
   DemographicTable(data.name = 'datasets::penguins') |>
   print()
 ```
@@ -68,7 +68,7 @@ Color of each individual `group` is determined by `scales::pal_hue()`, which is 
 #| lst-label: lst-penguins_sex
 #| lst-cap: '`penguins` by `sex`'
 datasets::penguins |>
-  subset.data.frame(select = c('sex', 'species', 'bill_dep')) |>
+  subset(select = c('sex', 'species', 'bill_dep')) |>
   DemographicTable(by = ~ sex, data.name = 'datasets::penguins') |> 
   print()
 ```
@@ -77,7 +77,7 @@ User may choose to hide the $p$-values with option `compare = FALSE`.
 
 ```{r}
 datasets::penguins |>
-  subset.data.frame(select = c('sex', 'species', 'bill_dep')) |>
+  subset(select = c('sex', 'species', 'bill_dep')) |>
   DemographicTable(by = ~ sex, data.name = 'datasets::penguins', compare = FALSE) |>
   print()
 ```
@@ -86,7 +86,7 @@ datasets::penguins |>
 
 ```{r}
 datasets::penguins |>
-  subset.data.frame(select = c('sex', 'island', 'species', 'bill_dep')) |>
+  subset(select = c('sex', 'island', 'species', 'bill_dep')) |>
   DemographicTable(by = ~ sex + island, data.name = 'datasets::penguins', compare = FALSE) |> 
   print()
 ```
@@ -116,7 +116,7 @@ Remove the "overall" column.
 
 ```{r}
 tb = datasets::penguins |>
-  subset.data.frame(select = c('sex', 'island', 'species', 'bill_dep')) |>
+  subset(select = c('sex', 'island', 'species', 'bill_dep')) |>
   DemographicTable(by = ~ sex + island, data.name = 'datasets::penguins', compare = FALSE)
 tb[-1L] |> 
   print()
@@ -149,11 +149,11 @@ Using [`logical`](https://search.r-project.org/R/refmans/base/html/logical.html)
 #| lst-label: lst-logical
 #| lst-cap: 'Using `logical` values is discouraged'
 datasets::mtcars |>
-  within.data.frame(expr = {
+  within(expr = {
     vs_straight = as.logical(vs)
     am_manual = as.logical(am)
   }) |>
-  subset.data.frame(select = c('am_manual', 'drat', 'vs_straight')) |>
+  subset(select = c('am_manual', 'drat', 'vs_straight')) |>
   DemographicTable(by = ~ am_manual, data.name = 'mtcars') |>
   print()
 ```
@@ -165,11 +165,11 @@ Instead of using [`logical`](https://search.r-project.org/R/refmans/base/html/lo
 #| lst-label: lst-factor
 #| lst-cap: 'We recommend using 2-`level` `factor`s'
 datasets::mtcars |>
-  within.data.frame(expr = {
+  within(expr = {
     vs = ifelse(vs, yes = 'Straight', no = 'V-shaped')
     am = ifelse(am, yes = 'manual', no = 'automatic')
   }) |> 
-  subset.data.frame(select = c('am', 'drat', 'vs')) |>
+  subset(select = c('am', 'drat', 'vs')) |>
   DemographicTable(by = ~ am, data.name = 'mtcars') |>
   print()
 ```
