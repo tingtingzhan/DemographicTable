@@ -39,7 +39,7 @@
 #' 
 #' @keywords internal
 #' @export
-DemographicTable <- function(
+DemographicTable <- \(
     data, data.name = substitute(data), 
     by = NULL,
     ...
@@ -128,7 +128,7 @@ DemographicTable <- function(
 
 
 #' @export
-c.DemographicTable <- function(...) {
+c.DemographicTable <- \(...) {
   ret <- list(...) |>
     lapply(FUN = unclass) |> # a 'list' of 'list' (not 'listof')
     do.call(what = c)
@@ -146,7 +146,7 @@ c.DemographicTable <- function(...) {
 #' @importFrom officer fp_border
 #' @importFrom scales pal_hue
 #' @export
-as_flextable.DemographicTable <- function(x, font.size = 10, ...) {
+as_flextable.DemographicTable <- \(x, font.size = 10, ...) {
   
   rnm <- x |>
     lapply(FUN = rownames)
@@ -222,7 +222,7 @@ as_flextable.DemographicTable <- function(x, font.size = 10, ...) {
 
 
 #' @export
-print.DemographicTable <- function(x, ...) {
+print.DemographicTable <- \(x, ...) {
   
   z <- x |> 
     as_flextable.DemographicTable(...)

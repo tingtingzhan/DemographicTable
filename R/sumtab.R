@@ -99,7 +99,7 @@
 
 
 #' @export
-as_flextable.sumtab <- function(x, ...) {
+as_flextable.sumtab <- \(x, ...) {
   
   x1 <- data.frame(
     ' ' = dimnames(x)[[1L]], 
@@ -132,7 +132,7 @@ as_flextable.sumtab <- function(x, ...) {
 }
 
 #' @export
-print.sumtab <- function(x, ...) {
+print.sumtab <- \(x, ...) {
   x |>
     as_flextable.sumtab(...) |> 
     print() # ?flextable:::print.flextable()
@@ -248,7 +248,7 @@ compare_bool <- \(xs, pairwise = 3L, alternative = c('two.sided', 'less', 'great
   xs0 <- lapply(xs, FUN = \(x) x[!is.na(x)])
   X <- vapply(xs0, FUN = sum, FUN.VALUE = 0L, USE.NAMES = TRUE)
   N <- lengths(xs0, use.names = TRUE)
-  fish <- tryCatch(fisher.test(cbind(X, N-X), alternative = alternative), error = function(e) {
+  fish <- tryCatch(fisher.test(cbind(X, N-X), alternative = alternative), error = \(e) {
     if (grepl('consider using \'simulate.p.value=TRUE\'$', e$message)) {
       fisher.test(cbind(X, N-X), alternative = alternative, simulate.p.value = TRUE)
     } else stop(e$message)
@@ -262,7 +262,7 @@ compare_bool <- \(xs, pairwise = 3L, alternative = c('two.sided', 'less', 'great
       #sprintf(fmt = paste0(symb(p.value), '%.3f\nExact Binomial'), p.value) # sometimes looks wrong..
       p.value <- prop.test(x = X, n = N, alternative = alternative)$p.value
       sprintf(fmt = paste0(symb(p.value), '%.3f\n\u03C7\u00B2 (chi-square)'), p.value)
-    }, warning = function(w) fisher_txt))
+    }, warning = \(w) fisher_txt))
   }
   
   if (ng <= pairwise) {
@@ -284,7 +284,7 @@ compare_factor <- \(x, g, ...) {
   if (any(dim(tab) == 1L)) return('') # no comparison should be given
   
   # ?stats::fisher.test removes all-0 rows or columns
-  tmp <- tryCatch(fisher.test(tab), error = function(e) {
+  tmp <- tryCatch(fisher.test(tab), error = \(e) {
     tmp <- if (grepl('simulate.p.value=TRUE', x = e$message)) {
       tryCatch(fisher.test(tab, simulate.p.value = TRUE), error = identity, warning = identity)
     } else tryCatch(chisq.test(tab), error = identity, warning = identity)

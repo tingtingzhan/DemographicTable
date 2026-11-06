@@ -22,7 +22,7 @@
 #' @keywords internal
 #' @name sumstat
 #' @export
-.sumstat <- function(x, fmt, ...) UseMethod(generic = '.sumstat')
+.sumstat <- \(x, fmt, ...) UseMethod(generic = '.sumstat')
 
 
 
